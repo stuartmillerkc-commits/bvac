@@ -13,7 +13,7 @@ A **working, self-contained demo** a BVAC parent can show BVAC admins: realistic
 | Step | Task | Owns | Can run alongside | Status |
 | --- | --- | --- | --- | --- |
 | 0 | Setup: repo, types, sample season, contracts, app shell | everything below, initially | — | Done |
-| 1 | Placement engine | `packages/engine` | 2, 3, 4, 5 | |
+| 1 | Placement engine | `packages/engine` | 2, 3, 4, 5 | Done |
 | 2 | Schedule builder | `packages/schedule` | 1, 3, 4, 5 | |
 | 3 | SportsEngine bridge | `packages/se-bridge` | 1, 2, 4, 5 | |
 | 4 | Family pages | `apps/web/app/{finder,register,preferences}`, `apps/web/components/family` | 1, 2, 3, 5 | |
