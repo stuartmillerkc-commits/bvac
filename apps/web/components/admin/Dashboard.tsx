@@ -8,7 +8,7 @@ import { AdminHeader } from './AdminNav';
 import { AsOfControl } from './AsOfControl';
 import { DemandGrid } from './DemandGrid';
 import { ReplayFeed } from './ReplayFeed';
-import { activeTeams, placementMap, registrationsAsOf, roundStatus, sortedDivisions } from './model';
+import { activeTeams, placementMap, registrationsAsOf, roundStatus, SEVERITY_LABEL, sortedDivisions, type RoundStatus } from './model';
 
 const MODEL_LABEL = {
   ranked: 'Ranked choice',
@@ -38,7 +38,7 @@ export function Dashboard() {
           Divisions
         </h2>
         <div className="table-wrap">
-          <table>
+          <table className="adm-cards-table">
             <thead>
               <tr>
                 <th scope="col">Division</th>
@@ -47,8 +47,8 @@ export function Dashboard() {
                 <th scope="col">Placed</th>
                 <th scope="col">Waitlist</th>
                 <th scope="col">1st choice</th>
-                <th scope="col">Rounds</th>
-                <th scope="col">Flags</th>
+                <th scope="col">To check</th>
+                <th scope="col">Next step</th>
               </tr>
             </thead>
             <tbody>
@@ -70,33 +70,35 @@ export function Dashboard() {
                         {d.label} · {MODEL_LABEL[d.settings.model]}
                       </div>
                     </th>
-                    <td>
-                      <b>{regs.length}</b> <span className="muted">({count('early')} / {count('regular')} / {count('late')})</span>
-                    </td>
-                    <td>
-                      <span className={`badge ${teams.length < needed ? 'warning' : 'good'}`}>
-                        {teams.length} of {needed}
+                    <td data-label="Registered (early / regular / late)">
+                      <span>
+                        <b>{regs.length}</b> <span className="muted">({count('early')} / {count('regular')} / {count('late')})</span>
                       </span>
                     </td>
-                    <td>{r?.stats.placed ?? '—'}</td>
-                    <td>{r?.stats.waitlisted ? <span className="badge warning">{r.stats.waitlisted}</span> : 0}</td>
-                    <td>{r && r.stats.placed ? `${Math.round(r.stats.firstChoiceRate * 100)}%` : '—'}</td>
-                    <td className="adm-small">
-                      {rs.current === 'done'
-                        ? 'Round 2 published'
-                        : rs.proposed + rs.approved > 0
-                          ? `Round ${rs.current} sent to coaches`
-                          : rs.current === 2
-                            ? 'Round 1 published'
-                            : 'Round 1 not sent'}
-                      {(rs.proposed > 0 || rs.approved > 0) && (
-                        <div className="muted">
-                          {rs.proposed} with coaches · {rs.approved} approved
-                        </div>
-                      )}
+                    <td data-label="Teams vs needed">
+                      <div>
+                        <span className={`badge ${teams.length < needed ? 'warning' : 'good'}`}>
+                          {teams.length} of {needed}
+                        </span>
+                        {teams.length < needed && (
+                          <div className="muted adm-small">
+                            needs {needed - teams.length} more coach{needed - teams.length === 1 ? '' : 'es'}
+                          </div>
+                        )}
+                      </div>
                     </td>
-                    <td>
-                      <FlagCounts flags={flags} />
+                    <td data-label="Placed">{r?.stats.placed ?? '—'}</td>
+                    <td data-label="Waitlist">{r?.stats.waitlisted ? <span className="badge warning">{r.stats.waitlisted}</span> : 0}</td>
+                    <td data-label="1st choice">{r && r.stats.placed ? `${Math.round(r.stats.firstChoiceRate * 100)}%` : '—'}</td>
+                    <td data-label="To check">
+                      <Link href={`/admin/board/?d=${d.code}#flags`} className="adm-plain-link" aria-label={`Things to check in ${d.name}`}>
+                        <FlagCounts flags={flags} />
+                      </Link>
+                    </td>
+                    <td data-label="Next step" className="adm-small">
+                      <div>
+                        <NextStep code={d.code} rs={rs} />
+                      </div>
                     </td>
                   </tr>
                 );
@@ -105,8 +107,8 @@ export function Dashboard() {
           </table>
         </div>
         <p className="muted adm-small" style={{ margin: 0 }}>
-          Teams needed = registrations ÷ preferred team size, rounded up. Counts follow the &quot;As of&quot; date above. Click a division to open
-          its team board.
+          Teams needed = registrations ÷ ideal team size, rounded up; each extra team needs a coach and a practice slot. &quot;1st choice&quot; is the
+          share of placed kids on their family&apos;s 1st choice team. Counts follow the &quot;As of&quot; date above.
         </p>
       </section>
 
@@ -130,14 +132,42 @@ export function Dashboard() {
   );
 }
 
+/** What the admin should do next in a division's rounds, linked to its board. */
+function NextStep({ code, rs }: { code: string; rs: RoundStatus }) {
+  const board = `/admin/board/?d=${code}`;
+  if (rs.current === 'done')
+    return (
+      <>
+        Both rounds published. <Link href="/admin/exports/">Export for SportsEngine</Link>
+      </>
+    );
+  const round = rs.current;
+  const [status, action] =
+    rs.sent === 0
+      ? [round === 2 ? 'Round 1 published.' : '', `Review and send round ${round}`]
+      : rs.proposed > 0
+        ? [`Round ${round}: ${rs.approved} of ${rs.sent} approved by coaches.`, 'Check on coaches']
+        : [`Round ${round} approved.`, `Publish round ${round}`];
+  return (
+    <>
+      {status && <div className="muted">{status}</div>}
+      <Link href={board}>{action} →</Link>
+    </>
+  );
+}
+
 function FlagCounts({ flags }: { flags: Flag[] }) {
   const counts = SEVERITY_ORDER.map((s) => [s, flags.filter((f) => f.severity === s).length] as const).filter(([, n]) => n > 0);
   if (!counts.length) return <span className="badge good">None</span>;
   return (
     <span className="adm-chips">
       {counts.map(([s, n]) => (
-        <span key={s} className={`badge ${s}`} title={`${n} ${s}`}>
-          {n} {s === 'info' ? 'notes' : s}
+        <span
+          key={s}
+          className={`badge ${s}`}
+          title={s === 'critical' ? 'Needs action, e.g. not enough seats' : s === 'warning' ? 'Worth a look, e.g. a small team' : 'Friend or coach requests the engine could not meet'}
+        >
+          {s === 'info' ? `${n} unmet request${n === 1 ? '' : 's'}` : s === 'critical' ? `${n} urgent` : `${n} to check`}
         </span>
       ))}
     </span>
@@ -160,8 +190,8 @@ function DivisionDetail({ divisionId }: { divisionId: string }) {
       <summary>
         <b>{d.name}</b>{' '}
         <span className="muted adm-small">
-          {teams.reduce((sum, t) => sum + Math.max(0, max - size(t.id)), 0)} seats left · {important.length} flag
-          {important.length === 1 ? '' : 's'}
+          {teams.reduce((sum, t) => sum + Math.max(0, max - size(t.id)), 0)} seats left · {important.length} thing
+          {important.length === 1 ? '' : 's'} to check
         </span>
       </summary>
       <div className="adm-stack" style={{ padding: '8px 0 12px' }}>
@@ -180,7 +210,7 @@ function DivisionDetail({ divisionId }: { divisionId: string }) {
           <ul className="adm-small" style={{ margin: 0, paddingLeft: 18 }}>
             {important.map((f, i) => (
               <li key={i}>
-                <span className={`badge ${f.severity}`}>{f.severity}</span> {f.message}
+                <span className={`badge ${f.severity}`}>{SEVERITY_LABEL[f.severity]}</span> {f.message}
               </li>
             ))}
           </ul>

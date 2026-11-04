@@ -6,7 +6,7 @@ import { compareStrings, formatWindow, fullName, type ID, type Placement, type R
 import { useSeason, type CoachNote } from '@/lib/season-store';
 import { GameList } from '@/components/GameList';
 import { AdminHeader, DivisionPills } from './AdminNav';
-import { KidCard } from './KidCard';
+import { BadgeLegend, KidCard } from './KidCard';
 import { RoundsPanel } from './RoundsPanel';
 import {
   activeTeams,
@@ -18,6 +18,7 @@ import {
   placementMap,
   playerOf,
   registrationsAsOf,
+  SEVERITY_LABEL,
   shortName,
   sortedDivisions,
   teamOfFrom,
@@ -133,6 +134,7 @@ export function Board() {
 
   const notes = edits.coachNotes.filter((n) => n.status === 'open' && index.team.get(n.teamId)?.divisionId === division.id);
   const flags = (result?.flags ?? []).filter((f) => f.severity !== 'info');
+  const urgent = flags.filter((f) => f.severity === 'critical').length;
 
   return (
     <div className="adm-stack">
@@ -140,9 +142,9 @@ export function Board() {
         <DivisionPills divisions={divisions} current={division} hrefFor={(d) => `/admin/board/?d=${d.code}`} />
       </AdminHeader>
       <p className="muted" style={{ margin: 0 }}>
-        {division.name} · {division.label} · {regs.length} registered · team size {settings.teamSize.min} / {settings.teamSize.preferred} /{' '}
-        {settings.teamSize.max} (min / preferred / max). Drag a card to another team or the waitlist, or use its &quot;Move to…&quot; menu. Moved
-        cards are pinned, so re-runs keep them.
+        {division.name} · {division.label} · {regs.length} registered · teams of {settings.teamSize.min} to {settings.teamSize.max} players,{' '}
+        {settings.teamSize.preferred} ideal. The engine suggested these teams; open &quot;Why this team?&quot; on any kid to see the reasons. To
+        change one, drag the card or use its &quot;Move to…&quot; menu. Moved kids are pinned, so the engine leaves them there.
       </p>
 
       <RoundsPanel division={division} />
@@ -175,20 +177,41 @@ export function Board() {
 
       {notes.length > 0 && <CoachNotes notes={notes} map={map} onUpdate={updateEdits} />}
 
-      {flags.length > 0 && (
-        <details className="card">
+      {flags.length > 0 ? (
+        <details className="card" id="flags" open={urgent > 0 || undefined}>
           <summary>
-            <b>{flags.length} flags</b> <span className="muted adm-small">team sizes, demand, families with no fitting team, split siblings</span>
+            <b>
+              {flags.length} thing{flags.length === 1 ? '' : 's'} to check
+            </b>{' '}
+            <span className="muted adm-small">
+              {urgent > 0 ? `${urgent} urgent · ` : ''}teams too small, not enough seats, families with no team on their days
+            </span>
           </summary>
           <ul className="adm-small" style={{ margin: '8px 0 0', paddingLeft: 18 }}>
             {flags.map((f, i) => (
               <li key={i}>
-                <span className={`badge ${f.severity}`}>{f.severity}</span> {f.message}
+                <span className={`badge ${f.severity}`}>{SEVERITY_LABEL[f.severity]}</span> {f.message}
               </li>
             ))}
           </ul>
         </details>
+      ) : (
+        <p className="adm-notice" id="flags" style={{ margin: 0 }}>
+          Nothing to check in {division.name}: every team is within size and every family has a team that fits their days.
+        </p>
       )}
+
+      <BadgeLegend />
+
+      <nav className="adm-jump" aria-label="Jump to a team">
+        <span className="muted">Jump to:</span>
+        {teams.map((t) => (
+          <a key={t.id} href={`#col-${t.id}`}>
+            {t.label} ({(byTeam.get(t.id) ?? []).length})
+          </a>
+        ))}
+        <a href="#col-waitlist">Waitlist ({byTeam.get(WAITLIST)!.length})</a>
+      </nav>
 
       <div className="adm-board">
         {teams.map((t) => (
@@ -208,10 +231,12 @@ export function Board() {
             ))}
           </TeamColumn>
         ))}
-        <section className={`adm-col${dropTarget === WAITLIST ? ' drop' : ''}`} aria-label="Waitlist" {...dropProps(WAITLIST)}>
+        <section id="col-waitlist" className={`adm-col${dropTarget === WAITLIST ? ' drop' : ''}`} aria-label="Waitlist" {...dropProps(WAITLIST)}>
           <h3>Waitlist</h3>
           <p className="muted adm-small" style={{ margin: 0 }}>
-            {byTeam.get(WAITLIST)!.length} kids, highest priority first (early registration, seasons played), then registration time.
+            {byTeam.get(WAITLIST)!.length === 0
+              ? 'Nobody is waiting. Drag a kid here to take them off a team.'
+              : `${byTeam.get(WAITLIST)!.length} kid${byTeam.get(WAITLIST)!.length === 1 ? '' : 's'} with no seat yet, first in line at the top (early sign-up and seasons played count most). Open "Why waitlisted?" for each family's reason.`}
           </p>
           {byTeam.get(WAITLIST)!.map((r) => (
             <KidCard
@@ -251,7 +276,7 @@ function TeamColumn({
   const pattern = team.gameTrackId ? trackDescriptions.get(team.gameTrackId) : undefined;
   const size = index.division.get(team.divisionId)!.settings.teamSize;
   return (
-    <section className={`adm-col${drop ? ' drop' : ''}`} aria-label={team.label} {...dropProps}>
+    <section id={`col-${team.id}`} className={`adm-col${drop ? ' drop' : ''}`} aria-label={team.label} {...dropProps}>
       <div>
         <h3>
           {team.label}
@@ -269,7 +294,7 @@ function TeamColumn({
       </div>
       <SizeBar n={kids.length} {...size} />
       {children}
-      {kids.length === 0 && <p className="muted adm-small">Drop kids here.</p>}
+      {kids.length === 0 && <p className="muted adm-small">No players yet. Drag a kid here, or use a kid&apos;s &quot;Move to…&quot; menu.</p>}
     </section>
   );
 }

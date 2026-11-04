@@ -65,7 +65,7 @@ export function Tour() {
       who: 'Admin',
       href: `/admin/board/?d=${d3.code}`,
       cta: `Open the ${d3.name} board`,
-      doThis: ['Expand a kid card to see why they are on that team.', 'Drag a kid (or use "Move to…") and read what the move breaks.'],
+      doThis: ['Open "Why this team?" on a kid card to see the reasons.', 'Drag a kid (or use "Move to…") and read what the move breaks.'],
       pointOut: 'Admins have the last word. The engine proposes; any placement can be moved or pinned.',
     },
     {
@@ -89,7 +89,7 @@ export function Tour() {
       who: 'Admin',
       href: `/admin/board/?d=${d3.code}`,
       cta: 'Back to the board',
-      doThis: ['Click "Publish round 1".', 'Optionally "Undo publish" to show it can be rolled back.'],
+      doThis: ['Click "Publish round 1".', 'Optionally "Undo last publish" to show it can be rolled back.'],
       pointOut: 'Published placements never move on re-runs. Early registrants get certainty in February, not March.',
     },
     {

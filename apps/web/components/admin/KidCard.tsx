@@ -53,21 +53,23 @@ export function KidCard({ reg, placement, teamOf, teams, onMove, onTogglePin, fl
           (placement.choiceRankMet ? (
             <span className={`badge ${placement.choiceRankMet === 1 ? 'good' : ''}`}>{ordinal(placement.choiceRankMet)} choice</span>
           ) : (
-            <span className="badge warning">Not ranked</span>
+            <span className="badge warning" title="The family didn't rank this team; it fits their days and they said any team is OK">
+              Didn&apos;t rank this team
+            </span>
           ))}
         {sen.seasons > 0 ? (
           <span className="badge" title={`${sen.seasons} earlier BVAC season${sen.seasons === 1 ? '' : 's'}`}>
-            {sen.seasons} season{sen.seasons === 1 ? '' : 's'}
+            {sen.seasons} BVAC season{sen.seasons === 1 ? '' : 's'}
           </span>
         ) : (
-          <span className="badge">New</span>
+          <span className="badge">New to BVAC</span>
         )}
         {sen.seasonsWithCoach > 0 && (
           <span className="badge good" title={sen.returningWithCoach ? 'Played for this coach last season' : 'Played for this coach before'}>
             With coach ×{sen.seasonsWithCoach}
           </span>
         )}
-        {reg.window !== 'early' && <span className="badge">{reg.window === 'late' ? 'Late' : 'Regular'}</span>}
+        {reg.window !== 'early' && <span className="badge">{reg.window === 'late' ? 'Late sign-up' : 'Regular sign-up'}</span>}
         {state !== 'projected' && state !== 'waitlisted' && <span className={`badge state-${state}`}>{STATE_LABEL[state]}</span>}
         {pinned && state !== 'published' && <span className="badge solid">Pinned</span>}
         {coachPick && (
@@ -78,7 +80,7 @@ export function KidCard({ reg, placement, teamOf, teams, onMove, onTogglePin, fl
       </div>
       <RequestChips req={req} />
       <details>
-        <summary>Why here</summary>
+        <summary>{teamId ? 'Why this team?' : 'Why waitlisted?'}</summary>
         <ul className="adm-reasons">
           {(placement?.reasons ?? []).map((r, i) => (
             <li key={i}>{r.text}</li>
@@ -146,7 +148,7 @@ export function RequestChips({ req }: { req: ReturnType<typeof requestStatus> })
     <div className="adm-chips" aria-label="Requests">
       {req.sibling !== null && (
         <span className={`badge ${req.sibling ? 'good' : 'warning'}`} title={req.sibling ? 'Sibling together' : 'Sibling on another team'}>
-          Sibling {mark(req.sibling)}
+          {req.sibling ? 'Sibling together' : 'Sibling apart'}
         </span>
       )}
       {req.friend && (
@@ -159,14 +161,51 @@ export function RequestChips({ req }: { req: ReturnType<typeof requestStatus> })
       )}
       {req.coach !== null && (
         <span className={`badge ${req.coach ? 'good' : 'warning'}`} title={req.coach ? 'Coach request met' : 'Coach request not met'}>
-          Coach {mark(req.coach)}
+          Coach request {mark(req.coach)}
         </span>
       )}
       {req.unmatched > 0 && (
         <span className="badge warning" title="A requested name did not match a registered kid">
-          {req.unmatched} unmatched
+          {req.unmatched} name{req.unmatched === 1 ? '' : 's'} not found
         </span>
       )}
     </div>
+  );
+}
+
+/** Plain-language key for the labels on kid cards (board and coach view). */
+export function BadgeLegend({ coach = false }: { coach?: boolean }) {
+  const rows: [string, string, string][] = [
+    ['good', '1st choice', "The family's 1st choice team (2nd, 3rd… likewise)."],
+    ['warning', "Didn't rank this team", 'Not one of their picks, but it fits their days and they said any team is OK.'],
+    ['', '2 BVAC seasons', 'Seasons played at BVAC before. "New to BVAC" means first season.'],
+    ['good', 'With coach ×2', 'Seasons played for this coach. Counts toward priority on this team only.'],
+    ['', 'Regular sign-up', 'Registered after the early deadline (late sign-ups go to the waitlist). Early sign-ups have no label.'],
+    ['good', 'Friend 1/2', 'Friend requests met: 1 of the 2 requested friends is on this team.'],
+    ['good', 'Sibling together', 'A requested sibling is on the same team ("apart" if not).'],
+    ['warning', 'Coach request ✗', 'The family asked for a coach and did not get them (✓ if they did).'],
+    ['warning', '1 name not found', "A requested friend's name didn't match any registered kid yet."],
+  ];
+  if (!coach) {
+    rows.push(['', 'Pinned', 'Moved or pinned by an admin. The engine will not move this kid.']);
+    rows.push(['', "Coach's child / Coach pick", "Locked to this team before placement runs (the coach's own kid or protected pick)."]);
+  }
+  rows.push(['', coach ? 'Needs your approval' : 'Waiting for coach', 'Sent to the coach in this round and not approved yet.']);
+  return (
+    <details className="card adm-legend">
+      <summary>
+        <b>What the labels mean</b>
+      </summary>
+      <dl>
+        {rows.map(([cls, label, text]) => (
+          <div key={label} style={{ display: 'contents' }}>
+            <dt>
+              <span className={`badge ${cls}`}>{label}</span>
+            </dt>
+            <dd>{text}</dd>
+          </div>
+        ))}
+      </dl>
+    </details>
   );
 }

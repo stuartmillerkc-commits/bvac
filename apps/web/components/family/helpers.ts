@@ -155,6 +155,17 @@ export function availabilityFromAnswers(days: readonly Weekday[], timeIds: reado
   return out;
 }
 
+/**
+ * The day and hour boxes that cover a team's practice, so a family who clicked
+ * "Register for this team" starts with answers that fit it. A 6:30–7:30pm
+ * practice needs both the 6–7pm and 7–8pm boxes.
+ */
+export function answersForTeam(index: SeasonIndex, team: Team): { days: Weekday[]; times: string[] } {
+  const w = teamPracticeWindow(index, team);
+  if (!FORM_DAYS.includes(w.day)) return { days: [], times: [] };
+  return { days: [w.day], times: FORM_TIMES.filter((t) => t.start < w.end && t.end > w.start).map((t) => t.id) };
+}
+
 // ---------------------------------------------------------------------------
 // Registration window and timestamps
 // ---------------------------------------------------------------------------
@@ -166,11 +177,13 @@ export function centralTimestamp(ms: number): ISODateTime {
 
 /** Early or regular by the season's dates; late after regular closes; "regular" outside every window. */
 export function windowFor(season: Season, at: ISODateTime): RegistrationWindow {
+  // Same rule as the SportsEngine import: anything up to the end of early
+  // registration counts as early (so a demo sign-up made before Jan 4 is
+  // treated like one on opening day), then regular, then late.
   const date = at.slice(0, 10);
-  if (date >= season.windows.early.start && date <= season.windows.early.end) return 'early';
-  if (date >= season.windows.regular.start && date <= season.windows.regular.end) return 'regular';
-  if (date > season.windows.regular.end && date <= season.rostersFinal) return 'late';
-  return 'regular';
+  if (date <= season.windows.early.end) return 'early';
+  if (date <= season.windows.regular.end) return 'regular';
+  return 'late';
 }
 
 // ---------------------------------------------------------------------------

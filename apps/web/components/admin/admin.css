@@ -447,3 +447,156 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* Round steps: send → coaches approve → publish, with the current step marked. */
+.adm-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 14px;
+}
+
+.adm-steps li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-muted);
+}
+
+.adm-steps li[data-state='current'] {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.adm-step-num {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.adm-steps li[data-state='current'] .adm-step-num {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.adm-steps li[data-state='done'] .adm-step-num {
+  border-color: var(--color-good);
+  color: var(--color-good);
+}
+
+/* "What to do next" message under a step list. */
+.adm-next {
+  border-left: 4px solid var(--color-primary);
+  background: var(--color-info-bg);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.adm-next p {
+  margin: 0;
+}
+
+.adm-next p + p {
+  margin-top: 4px;
+}
+
+/* Badge legend on the board and coach roster. */
+.adm-legend {
+  font-size: 14px;
+}
+
+.adm-legend dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 12px;
+  margin: 8px 0 0;
+  align-items: center;
+}
+
+.adm-legend dd {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+/* Jump links to each team column (long boards on phones). */
+.adm-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.adm-plain-link,
+.adm-plain-link:hover {
+  text-decoration: none;
+}
+
+/* Division table becomes one card per division on phones, so nothing hides off-screen. */
+@media (max-width: 720px) {
+  .adm-cards-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .adm-cards-table,
+  .adm-cards-table tbody,
+  .adm-cards-table tr,
+  .adm-cards-table th,
+  .adm-cards-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .adm-cards-table tr {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+  }
+
+  .adm-cards-table th,
+  .adm-cards-table td {
+    border: 0;
+    padding: 4px 0;
+  }
+
+  .adm-cards-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    text-align: right;
+  }
+
+  .adm-cards-table td::before {
+    content: attr(data-label);
+    color: var(--color-text-muted);
+    text-align: left;
+    flex-shrink: 0;
+    max-width: 45%;
+  }
+}
+
+@media (max-width: 720px) {
+  .adm-cards-table th,
+  .adm-cards-table td {
+    white-space: normal;
+  }
+}
+
+.adm-cards-table .badge {
+  white-space: nowrap;
+}

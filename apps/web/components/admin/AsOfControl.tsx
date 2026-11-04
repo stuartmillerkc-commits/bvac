@@ -54,8 +54,13 @@ export function AsOfControl() {
           As of {formatDate(current)}
           {!asOf && <span className="muted"> · everyone registered</span>}
         </h2>
-        <span className="badge">{phase}</span>
+        <span className="badge" title="Where the season is on this date">
+          Season: {phase.toLowerCase()}
+        </span>
       </div>
+      <p className="muted adm-small" style={{ margin: 0 }}>
+        Every admin page shows the season as it stood on this date. Press Play to watch sign-ups arrive day by day, or drag the slider.
+      </p>
       <div className="adm-row">
         <button
           type="button"
