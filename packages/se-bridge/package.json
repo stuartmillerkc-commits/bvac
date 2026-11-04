@@ -5,18 +5,22 @@
   "type": "module",
   "description": "SportsEngine bridge: registration import, team/schedule/roster exports, question pack (Task 3).",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./fixtures/*": "./fixtures/*"
   },
   "scripts": {
+    "fixture": "tsx scripts/fixture.ts",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@bvac/core": "workspace:*"
+    "@bvac/core": "workspace:*",
+    "@bvac/schedule": "workspace:*"
   },
   "devDependencies": {
     "@bvac/seed": "workspace:*",
     "@types/node": "22.20.5",
+    "tsx": "4.23.15",
     "typescript": "5.9.3",
     "vitest": "5.1.0"
   }
