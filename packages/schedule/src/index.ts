@@ -1,21 +1,20 @@
 /**
  * @bvac/schedule — Task 2 in docs/BUILD_PLAN.md.
  *
- * STUB: returns no games. Task 2 implements the round robin by schedule
- * position, rotating/anchored time balancing, conflict checks and plain-words
- * track descriptions described in docs/DESIGN.md "Game schedule builder".
+ * Game schedule builder by schedule position (docs/DESIGN.md "Game schedule
+ * builder"): circle-method round robin, rotating or anchored time balance,
+ * coach and sibling checks, plain-words track descriptions, partial rebuilds
+ * from a date, and weekly practice events.
  */
-import type { BuildSchedule } from '@bvac/core';
+export const SCHEDULE_IS_STUB = false;
 
-export const SCHEDULE_IS_STUB = true;
-
-export const buildSchedule: BuildSchedule = (input) => {
-  const tracks = input.data.gameTracks.filter((t) => t.divisionId === input.divisionId);
-  return {
-    divisionId: input.divisionId,
-    games: [],
-    tracks: tracks.map((t) => ({ ...t, description: t.description || 'Game times to be announced' })),
-    flags: [],
-    changedGameIds: [],
-  };
-};
+export {
+  buildSchedule,
+  TBA_TRACK_DESCRIPTION,
+  UNSCHEDULED_TRACK_DESCRIPTION,
+  type ScheduleBuildOptions,
+} from './build';
+export { buildSeasonSchedules } from './season';
+export { practiceEvents, type PracticeEvent } from './practice';
+export { circleRounds, type Pairing, type RoundRobinRound } from './round-robin';
+export { minCostAssignment } from './assignment';
