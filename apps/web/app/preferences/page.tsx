@@ -1,9 +1,13 @@
-import { Placeholder } from '@/components/Placeholder';
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import { Preferences } from '@/components/family/Preferences';
+
+export const metadata: Metadata = { title: 'Team preferences · BVAC Team Builder' };
 
 export default function Page() {
   return (
-    <Placeholder task="Task 4" title="Preferences">
-      The optional page linked from SportsEngine's last page: rank every team that works, any-team-on-these-nights, and confirm friend matches against registered kids.
-    </Placeholder>
+    <Suspense fallback={<p className="muted">Loading preferences…</p>}>
+      <Preferences />
+    </Suspense>
   );
 }
