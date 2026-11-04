@@ -1,9 +1,13 @@
-import { Placeholder } from '@/components/Placeholder';
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import { Compare } from '@/components/admin/Compare';
+
+export const metadata: Metadata = { title: 'Compare scenarios · BVAC Team Builder' };
 
 export default function Page() {
   return (
-    <Placeholder task="Task 5" title="Compare scenarios">
-      Two placement scenarios side by side (e.g. priority-first vs maximize satisfaction, or team size 11 vs 12) with first-choice, requests-met and size spread.
-    </Placeholder>
+    <Suspense fallback={<p className="muted">Loading…</p>}>
+      <Compare />
+    </Suspense>
   );
 }

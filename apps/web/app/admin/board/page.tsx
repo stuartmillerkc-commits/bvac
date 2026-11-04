@@ -1,9 +1,13 @@
-import { Placeholder } from '@/components/Placeholder';
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import { Board } from '@/components/admin/Board';
+
+export const metadata: Metadata = { title: 'Team board · BVAC Team Builder' };
 
 export default function Page() {
   return (
-    <Placeholder task="Task 5" title="Team board">
-      One column per team with size bar; kid cards with seniority, requests and choice met; drag to move, pin to lock, and see what each move breaks.
-    </Placeholder>
+    <Suspense fallback={<p className="muted">Loading the team board…</p>}>
+      <Board />
+    </Suspense>
   );
 }

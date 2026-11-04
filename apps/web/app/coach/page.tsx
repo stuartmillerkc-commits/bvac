@@ -1,9 +1,13 @@
-import { Placeholder } from '@/components/Placeholder';
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import { CoachView } from '@/components/admin/CoachView';
+
+export const metadata: Metadata = { title: 'Coach view · BVAC Team Builder' };
 
 export default function Page() {
   return (
-    <Placeholder task="Task 5" title="Coach view">
-      Claim a practice slot and game track, see the projected roster with each kid's reasons, make protected picks, approve or propose swaps, answer admin choice requests.
-    </Placeholder>
+    <Suspense fallback={<p className="muted">Loading the coach view…</p>}>
+      <CoachView />
+    </Suspense>
   );
 }
