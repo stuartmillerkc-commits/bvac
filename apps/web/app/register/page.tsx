@@ -1,9 +1,13 @@
-import { Placeholder } from '@/components/Placeholder';
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import { RegisterForm } from '@/components/family/RegisterForm';
+
+export const metadata: Metadata = { title: 'Register (SportsEngine mock) · BVAC Team Builder' };
 
 export default function Page() {
   return (
-    <Placeholder task="Task 4" title="SportsEngine registration (mock)">
-      A faithful mock of BVAC's SportsEngine soccer form with the 7 structured questions added: days, only-these-days, times, 1st and 2nd choice team, coach request, player requests, what matters most, seasons played.
-    </Placeholder>
+    <Suspense fallback={<p className="muted">Loading the registration form…</p>}>
+      <RegisterForm />
+    </Suspense>
   );
 }
