@@ -1,107 +1,88 @@
 /**
- * @bvac/engine — Task 1 in docs/BUILD_PLAN.md.
+ * @bvac/engine — the placement engine (docs/DESIGN.md "Placement engine",
+ * docs/BUILD_PLAN.md Task 1).
  *
- * STUB: `placeDivision` currently does the simplest thing that satisfies the
- * contract (locked/protected players first, then first come, first served on
- * ranked choices) so the web app has realistic data to render. Task 1 replaces
- * it with the priority-first deferred-acceptance engine from docs/DESIGN.md.
+ * Run order for one division:
+ * 1. Lock fixed placements (admin locks, published rounds) and coach
+ *    protected picks (which include coaches' own kids).
+ * 2. Build units: same-division siblings move together unless opted out.
+ * 3. Place the main pool with the division's model:
+ *    - ranked / hybrid / coachSelect: priority-first deferred acceptance,
+ *      then a friend pass and a vacancy fill. coachSelect leaves placements
+ *      "proposed" for coach approval.
+ *    - fcfs: submission order, first acceptable team with room.
+ *    - placementMethod "maxSatisfaction": local search on total utility,
+ *      starting from the priority-first result.
+ * 4. Late-window registrations take leftover seats in submission order.
+ * 5. Report placements with reasons, flags and stats.
  */
+import type { ID, PlaceDivision, PlacementRunInput, PlacementRunResult } from '@bvac/core';
 import {
-  compareStrings,
-  indexSeason,
-  type Flag,
-  type ID,
-  type Placement,
-  type PlaceDivision,
-  type PlacementRunResult,
-} from '@bvac/core';
+  deferredAcceptance,
+  emptyAssignment,
+  fillVacancies,
+  firstComeFirstServed,
+  friendPass,
+  maximizeSatisfaction,
+  unitUtility,
+  type Assignment,
+} from './assign';
+import { buildContext } from './context';
+import { lockedTeamOf } from './preferences';
+import { buildOutcome } from './report';
+import { buildUnits } from './units';
 
-export const ENGINE_IS_STUB = true;
+export const ENGINE_IS_STUB = false;
 
-export const placeDivision: PlaceDivision = (input): PlacementRunResult => {
-  const { data, divisionId, round, fixed, asOf } = input;
-  const index = indexSeason(data);
-  const division = index.division.get(divisionId);
-  if (!division) throw new Error(`Unknown division ${divisionId}`);
-  const settings = { ...division.settings, ...input.settingsOverride };
-  const cap = round === 1 && settings.round1Fill === 'preferred' ? settings.teamSize.preferred : settings.teamSize.max;
-  const teams = (index.teamsByDivision.get(divisionId) ?? []).filter((t) => t.status !== 'cancelled');
-  const size = new Map<ID, number>(teams.map((t) => [t.id, 0]));
-  const regs = (index.registrationsByDivision.get(divisionId) ?? [])
-    .filter((r) => !asOf || r.submittedAt <= asOf)
-    .sort((a, b) => compareStrings(a.submittedAt, b.submittedAt) || compareStrings(a.id, b.id));
+export { priorityFor, scorePriority, type PriorityFacts, type PriorityResult } from './priority';
+export { fitScore } from './preferences';
 
-  const placements = new Map<ID, Placement>();
-  for (const f of fixed) {
-    if (!regs.some((r) => r.id === f.registrationId)) continue;
-    placements.set(f.registrationId, f);
-    if (f.teamId) size.set(f.teamId, (size.get(f.teamId) ?? 0) + 1);
-  }
-  // Coach protected picks (includes the coach's own kids).
-  for (const ca of data.coachAssignments) {
-    if (!size.has(ca.teamId)) continue;
-    for (const playerId of ca.protectedPlayerIds) {
-      const reg = index.registrationByPlayer.get(playerId);
-      if (!reg || placements.has(reg.id) || !regs.includes(reg)) continue;
-      placements.set(reg.id, {
-        registrationId: reg.id,
-        teamId: ca.teamId,
-        round,
-        state: 'projected',
-        locked: true,
-        choiceRankMet: reg.choices.find((c) => c.teamId === ca.teamId)?.rank ?? null,
-        reasons: [{ code: 'protectedPick', text: 'Coach protected pick' }],
-      });
-      size.set(ca.teamId, (size.get(ca.teamId) ?? 0) + 1);
-    }
-  }
-  const flags: Flag[] = [];
-  for (const reg of regs) {
-    if (placements.has(reg.id)) continue;
-    const choice = [...reg.choices].sort((a, b) => a.rank - b.rank).find((c) => (size.get(c.teamId) ?? Infinity) < cap);
-    if (choice) {
-      size.set(choice.teamId, size.get(choice.teamId)! + 1);
-      placements.set(reg.id, {
-        registrationId: reg.id,
-        teamId: choice.teamId,
-        round,
-        state: 'projected',
-        locked: false,
-        choiceRankMet: choice.rank,
-        reasons: [{ code: 'choiceRank', text: `Choice #${choice.rank} (stub: first come, first served)` }],
-      });
-    } else {
-      placements.set(reg.id, {
-        registrationId: reg.id,
-        teamId: null,
-        round: null,
-        state: 'waitlisted',
-        locked: false,
-        choiceRankMet: null,
-        reasons: [{ code: reg.choices.length ? 'teamsFull' : 'noFittingTeam', text: reg.choices.length ? 'Ranked teams are full' : 'No ranked teams' }],
-      });
-      flags.push({ code: 'noFittingTeam', severity: 'warning', message: 'Could not place (stub engine)', divisionId, registrationId: reg.id });
-    }
-  }
-  const all = [...placements.values()];
-  const placed = all.filter((p) => p.teamId);
-  const sizes = teams.map((t) => size.get(t.id) ?? 0);
-  return {
-    divisionId,
-    round,
-    placements: all,
-    flags,
-    stats: {
-      registrations: regs.length,
-      placed: placed.length,
-      waitlisted: all.length - placed.length,
-      firstChoiceRate: placed.length ? placed.filter((p) => p.choiceRankMet === 1).length / placed.length : 0,
-      anyChoiceRate: placed.length ? placed.filter((p) => p.choiceRankMet !== null).length / placed.length : 0,
-      friendRequestRate: 0,
-      siblingTogetherRate: 0,
-      coachRequestRate: 0,
-      smallestTeam: sizes.length ? Math.min(...sizes) : 0,
-      largestTeam: sizes.length ? Math.max(...sizes) : 0,
-    },
+export const placeDivision: PlaceDivision = (input: PlacementRunInput): PlacementRunResult => {
+  const ctx = buildContext(input);
+
+  const lockedLoad = new Map<ID, number>();
+  for (const f of ctx.fixed.values()) if (f.teamId) lockedLoad.set(f.teamId, (lockedLoad.get(f.teamId) ?? 0) + 1);
+  for (const p of ctx.protectedPicks.values()) lockedLoad.set(p.teamId, (lockedLoad.get(p.teamId) ?? 0) + 1);
+
+  const units = buildUnits(ctx, ctx.mainPool);
+  const lateUnits = buildUnits(ctx, ctx.latePool);
+  const a = emptyAssignment(ctx, lockedLoad);
+
+  const unitOfReg = new Map<ID, string>();
+  for (const u of [...units, ...lateUnits]) for (const r of u.regs) unitOfReg.set(r.id, u.key);
+  const teamOfReg = (regId: ID, x: Assignment): ID | null => {
+    const locked = lockedTeamOf(ctx, regId);
+    if (locked) return locked;
+    const key = unitOfReg.get(regId);
+    return key ? (x.team.get(key) ?? null) : null;
   };
+
+  if (ctx.settings.model === 'fcfs') {
+    firstComeFirstServed(ctx, units, a);
+  } else {
+    deferredAcceptance(ctx, units, a);
+    // Two rounds: a move in the first can open a better friend match in the second.
+    for (let i = 0; i < 2; i++) {
+      friendPass(ctx, units, a, teamOfReg);
+      fillVacancies(ctx, units, a);
+    }
+    if (ctx.settings.placementMethod === 'maxSatisfaction') maximizeSatisfaction(ctx, units, a);
+  }
+  firstComeFirstServed(ctx, lateUnits, a);
+
+  const outcome = buildOutcome(ctx, units, lateUnits, a);
+  return { divisionId: ctx.division.id, round: ctx.round, ...outcome };
 };
+
+/**
+ * Total utility of a result under the maximize-satisfaction objective
+ * (choice tier, fit and priority). Lets admins and tests compare methods.
+ */
+export function satisfactionTotal(input: PlacementRunInput, result: PlacementRunResult): number {
+  const ctx = buildContext(input);
+  const units = buildUnits(ctx, ctx.mainPool);
+  const a: Assignment = { team: new Map(), load: new Map() };
+  const byReg = new Map(result.placements.map((p) => [p.registrationId, p.teamId]));
+  for (const u of units) a.team.set(u.key, byReg.get(u.regs[0]!.id) ?? null);
+  return units.reduce((s, u) => s + unitUtility(u, a), 0);
+}

@@ -507,27 +507,41 @@ export function generateSeason(options: GenerateOptions = {}): SeasonData {
   const slotById = new Map(practiceSlots.map((s) => [s.id, s]));
   const teamWindow = (t: Team): TimeWindow => slotById.get(t.practiceSlotId)!.window;
 
+  const householdPlan = new Map<
+    ID,
+    { window: RegistrationWindow; submittedAt: string; availability: TimeWindow[]; availabilityRequired: boolean }
+  >();
   for (const p of players) {
     const division = playerDivision.get(p.id)!;
     const divTeams = teams.filter((t) => t.divisionId === division.id);
     const returning = lastSeasonCoach.has(p.id);
     const coachParentTeam = guardiansOf.get(p.householdId)!.map((g) => coachTeamByPerson.get(g)).find((t) => t?.divisionId === division.id);
 
-    const window: RegistrationWindow = coachParentTeam
-      ? 'early'
-      : rng.weighted([['early', returning ? 66 : 52], ['regular', returning ? 31 : 43], ['late', 4]] as const);
-    const submittedAt = submittedAtFor(rng, window);
+    // Siblings are registered together and share one family schedule.
+    const family = householdPlan.get(p.householdId);
+    const window: RegistrationWindow =
+      family?.window ??
+      (coachParentTeam ? 'early' : rng.weighted([['early', returning ? 66 : 52], ['regular', returning ? 31 : 43], ['late', 4]] as const));
+    const submittedAt = family ? family.submittedAt.replace(/:(\d\d):00-/, (_, m: string) => `:${String(Math.min(59, Number(m) + 1)).padStart(2, '0')}:00-`) : submittedAtFor(rng, window);
 
     // Availability.
-    let days = DAY_POPULARITY.filter(([, prob]) => rng.chance(prob)).map(([d]) => d);
-    if (days.length === 0) days = [rng.weighted(DAY_POPULARITY)];
-    const startTime = rng.weighted([['17:00', 5], ['17:30', 3], ['18:00', 1], ['18:30', 1]] as const);
-    const endTime = rng.weighted([['19:00', 3], ['19:30', 3], ['20:00', 4]] as const);
-    let availability: TimeWindow[] = days.map((day) => ({ day, start: toMinutes(startTime), end: toMinutes(endTime) }));
+    let availability: TimeWindow[];
+    let availabilityRequired: boolean;
+    if (family) {
+      availability = family.availability;
+      availabilityRequired = family.availabilityRequired;
+    } else {
+      let days = DAY_POPULARITY.filter(([, prob]) => rng.chance(prob)).map(([d]) => d);
+      if (days.length === 0) days = [rng.weighted(DAY_POPULARITY)];
+      const startTime = rng.weighted([['17:00', 5], ['17:30', 3], ['18:00', 1], ['18:30', 1]] as const);
+      const endTime = rng.weighted([['19:00', 3], ['19:30', 3], ['20:00', 4]] as const);
+      availability = days.map((day) => ({ day, start: toMinutes(startTime), end: toMinutes(endTime) }));
+      availabilityRequired = rng.chance(0.35);
+    }
     if (coachParentTeam && !availability.some((w) => fitsAvailability(teamWindow(coachParentTeam), [w]))) {
       availability = [...availability, { ...teamWindow(coachParentTeam), start: teamWindow(coachParentTeam).start - 30 }];
     }
-    const availabilityRequired = rng.chance(0.35);
+    if (!family) householdPlan.set(p.householdId, { window, submittedAt, availability, availabilityRequired });
 
     // Team choices among teams that fit; coach's kids pick their parent's team.
     const fitting = divTeams.filter((t) => fitsAvailability(teamWindow(t), availability));
@@ -638,6 +652,38 @@ export function generateSeason(options: GenerateOptions = {}): SeasonData {
       // About half of friend requests are mutual.
       if (ok && rng.chance(0.5)) {
         addRequest(friend, { type: 'friend', targetName: `${p.firstName} ${p.lastName}`, targetPlayerId: p.id, matchStatus: 'matched' });
+      }
+    }
+  }
+
+  // Friends' families often coordinate: about half rank the friend's 1st choice first, if it fits their week.
+  const teamById = new Map(teams.map((t) => [t.id, t]));
+  const coachKid = (p: Player) => guardiansOf.get(p.householdId)!.some((g) => coachTeamByPerson.get(g)?.divisionId === playerDivision.get(p.id)!.id);
+  for (const p of players) {
+    const reg = regByPlayer.get(p.id)!;
+    if (coachKid(p) || reg.choices.length === 0) continue;
+    for (const q of reg.requests) {
+      if (q.type !== 'friend' || !q.targetPlayerId || !rng.chance(0.5)) continue;
+      const friendFirst = regByPlayer.get(q.targetPlayerId)?.choices.find((c) => c.rank === 1)?.teamId;
+      const team = friendFirst ? teamById.get(friendFirst) : undefined;
+      if (!team || team.divisionId !== reg.divisionId || !fitsAvailability(teamWindow(team), reg.availability)) continue;
+      const order = [team.id, ...reg.choices.map((c) => c.teamId).filter((t) => t !== team.id)].slice(0, reg.choices.length);
+      reg.choices = order.map((teamId, i) => ({ teamId, rank: i + 1 }));
+      break;
+    }
+  }
+  // Same-division siblings share one set of choices (the first sibling's).
+  for (const kids of kidsOf.values()) {
+    for (const a of kids) {
+      for (const b of kids) {
+        if (a === b || playerDivision.get(a.id) !== playerDivision.get(b.id) || coachKid(b)) continue;
+        if (players.indexOf(a) < players.indexOf(b)) {
+          const ra = regByPlayer.get(a.id)!;
+          const rb = regByPlayer.get(b.id)!;
+          rb.choices = ra.choices.map((c) => ({ ...c }));
+          rb.acceptAnyFittingTeam = ra.acceptAnyFittingTeam;
+          rb.siblingsTogetherOptOut = ra.siblingsTogetherOptOut;
+        }
       }
     }
   }
