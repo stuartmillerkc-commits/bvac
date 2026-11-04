@@ -1,0 +1,96 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`rosterList > carries coach, birthdate and SportsEngine id (column snapshot) 1`] = `
+{
+  "coachName": "Rachel Reyes",
+  "divisionName": "Division 1",
+  "externalId": "SE-101547",
+  "playerBirthdate": "2023-07-05",
+  "playerFirstName": "Oliver",
+  "playerLastName": "Reyes",
+  "teamLabel": "Option A",
+  "teamName": "Option A",
+}
+`;
+
+exports[`rosterList > carries coach, birthdate and SportsEngine id (column snapshot) 2`] = `
+[
+  [
+    "Division",
+    "Team Option",
+    "Team Name",
+    "Coach",
+    "Player Last Name",
+    "Player First Name",
+    "Date of Birth",
+    "Registration ID",
+  ],
+  [
+    "Division 1",
+    "Option A",
+    "Option A",
+    "Rachel Reyes",
+    "Reyes",
+    "Oliver",
+    "07/05/2023",
+    "SE-101547",
+  ],
+  [
+    "Division 1",
+    "Option A",
+    "Option A",
+    "Rachel Reyes",
+    "Reyes",
+    "Roman",
+    "11/27/2021",
+    "SE-101545",
+  ],
+  [
+    "Division 1",
+    "Option B",
+    "Option B",
+    "Andrew Thompson",
+    "Chavez",
+    "Kai",
+    "10/21/2022",
+    "SE-100723",
+  ],
+]
+`;
+
+exports[`sample Saved Report > writes answers in display form, one row per registration in submission order 1`] = `
+{
+  "1st choice team": "Option C · Tue 6:15–7pm · Field 6",
+  "2nd choice team": "Option A · Mon 5:30–6:15pm · Field 6",
+  "Amount Paid": "$100.00",
+  "Are these the only days that work?": "Yes, only the days checked",
+  "City": "Independence",
+  "Coach request": "No preference",
+  "Last season's coach": "",
+  "Parent/Guardian Email": "brittany.ramos67@example.com",
+  "Parent/Guardian First Name": "Brittany",
+  "Parent/Guardian Last Name": "Ramos",
+  "Parent/Guardian Phone": "816-555-0101",
+  "Player Date of Birth": "08/04/2021",
+  "Player First Name": "Hudson",
+  "Player Gender": "Male",
+  "Player Last Name": "Ramos",
+  "Player request 1": "Addison Foster",
+  "Player request 2": "",
+  "Practice days available": "Mon, Tue, Wed, Thu, Fri",
+  "Practice times available": "5:30–6:15pm, 6:15–7pm",
+  "Registration Date": "01/04/2027 06:33 AM",
+  "Registration ID": "SE-100763",
+  "Registration Status": "Complete",
+  "Request": "",
+  "Seasons played at BVAC": "0",
+  "Shirt Size": "Youth Small",
+  "Sibling or friend? (1)": "Friend",
+  "Sibling or friend? (2)": "",
+  "State": "MO",
+  "Waiver Accepted": "Yes",
+  "What age/grade is the player during the 2026-27 school year?": "5 yr. old - Kindergarten",
+  "What matters most? (1st)": "Practice time",
+  "What matters most? (2nd)": "Coach",
+}
+`;

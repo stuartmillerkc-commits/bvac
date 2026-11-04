@@ -1,0 +1,240 @@
+SportsEngine registration questions: Soccer · Spring 2027
+
+Add these to the soccer registration in the Registration Builder. Use each title exactly as written:
+it becomes the column name in the Saved Report, and the team builder's import looks for it.
+Where options differ by division, add one copy of the question per division with conditional logic
+(the import combines the copies).
+
+(existing) What age/grade is the player during the 2026-27 school year?
+   Type: Pulldown (pick one) · required
+   Options:
+   - 3-4 years old
+   - 5 yr. old - Kindergarten
+   - 1st and 2nd grade
+   - 3rd and 4th grade
+   - 5th and 6th grade
+   Note: Already on the form. Keep these answers exactly: the team questions below show or hide based on them.
+
+1. Practice days available
+   Type: Checkbox (pick all that apply) · required
+   Help text: Check every day your player could practice.
+   Options:
+   - Mon
+   - Tue
+   - Wed
+   - Thu
+   - Fri
+
+2. Are these the only days that work?
+   Type: Radio (pick one) · required
+   Options:
+   - Yes, only the days checked
+   - No, they're preferences
+   Note: "Yes" is the one hard limit the team builder never breaks.
+
+3. Practice times available
+   Type: Checkbox (pick all that apply) · required
+   Help text: Check every practice time that works on the days above.
+   Division 1: show when "What age/grade is the player during the 2026-27 school year?" is "3-4 years old"
+     - 5:30–6:15pm
+     - 6:15–7pm
+     - None of these times work
+   Division 2: show when "What age/grade is the player during the 2026-27 school year?" is "5 yr. old - Kindergarten"
+     - 5:30–6:15pm
+     - 6:15–7pm
+     - None of these times work
+   Division 3: show when "What age/grade is the player during the 2026-27 school year?" is "1st and 2nd grade"
+     - 5:30–6:30pm
+     - 6:30–7:30pm
+     - None of these times work
+   Division 4: show when "What age/grade is the player during the 2026-27 school year?" is "3rd and 4th grade"
+     - 5:30–6:30pm
+     - None of these times work
+   Division 5: show when "What age/grade is the player during the 2026-27 school year?" is "5th and 6th grade"
+     - 6:30–7:30pm
+     - None of these times work
+   Note: These are the practice times coaches can claim in each division.
+   Note: Keep "None of these times work" and make the question required, so a blank answer can't be mistaken for "any time".
+
+4. 1st choice team
+   Type: Pulldown (pick one) · optional
+   Help text: Pick the team option you want most (see every option in the Team Finder). Leave blank if any team on your days is fine.
+   Division 1: show when "What age/grade is the player during the 2026-27 school year?" is "3-4 years old"
+     - Option A · Mon 5:30–6:15pm · Field 5  [seat limit: 10]
+     - Option B · Tue 5:30–6:15pm · Field 5  [seat limit: 10]
+     - Option C · Tue 6:15–7pm · Field 5  [seat limit: 10]
+     - Option D · Wed 5:30–6:15pm · Field 6  [seat limit: 10]
+     - Option E · Thu 5:30–6:15pm · Field 6  [seat limit: 10]
+     Note: Make this copy required: the answer is what holds the seat. Seat limit: on this answer's item, turn on "Limit the total quantity to sell" and set it to 10. When it sells out, hide the option by hand and add a waitlist option.
+   Division 2: show when "What age/grade is the player during the 2026-27 school year?" is "5 yr. old - Kindergarten"
+     - Option A · Mon 5:30–6:15pm · Field 6
+     - Option B · Mon 6:15–7pm · Field 6
+     - Option C · Tue 6:15–7pm · Field 6
+     - Option D · Tue 6:15–7pm · Field 6
+     - Option E · Wed 6:15–7pm · Field 5
+     - Option F · Thu 6:15–7pm · Field 5
+     Note: No seat limit: in this division seats are assigned by the placement rules, so counts are estimates.
+   Division 3: show when "What age/grade is the player during the 2026-27 school year?" is "1st and 2nd grade"
+     - Option A · Mon 5:30–6:30pm · Field 3
+     - Option B · Mon 6:30–7:30pm · Field 4
+     - Option C · Tue 5:30–6:30pm · Field 3
+     - Option D · Tue 6:30–7:30pm · Field 4
+     - Option E · Thu 5:30–6:30pm · Field 3
+     - Option F · Thu 6:30–7:30pm · Field 4
+     Note: No seat limit: in this division seats are assigned by the placement rules, so counts are estimates.
+   Division 4: show when "What age/grade is the player during the 2026-27 school year?" is "3rd and 4th grade"
+     - Option A · Mon 5:30–6:30pm · Field 1
+     - Option B · Mon 5:30–6:30pm · Field 4
+     - Option C · Tue 5:30–6:30pm · Field 1
+     - Option D · Tue 5:30–6:30pm · Field 2
+     - Option E · Thu 5:30–6:30pm · Field 1
+     - Option F · Thu 5:30–6:30pm · Field 2
+     Note: No seat limit: in this division seats are assigned by the placement rules, so counts are estimates.
+   Division 5: show when "What age/grade is the player during the 2026-27 school year?" is "5th and 6th grade"
+     - Option A · Mon 6:30–7:30pm · Field 1
+     - Option B · Mon 6:30–7:30pm · Field 2
+     - Option C · Tue 6:30–7:30pm · Field 1
+     - Option D · Thu 6:30–7:30pm · Field 1
+     Note: No seat limit: in this division seats are assigned by the placement rules, so counts are estimates.
+   Note: First come, first served divisions hold a seat at payment through the seat limit on this answer.
+
+5. 2nd choice team
+   Type: Pulldown (pick one) · optional
+   Help text: Optional: your next choice if the first is full.
+   Division 1: show when "What age/grade is the player during the 2026-27 school year?" is "3-4 years old"
+     - Option A · Mon 5:30–6:15pm · Field 5
+     - Option B · Tue 5:30–6:15pm · Field 5
+     - Option C · Tue 6:15–7pm · Field 5
+     - Option D · Wed 5:30–6:15pm · Field 6
+     - Option E · Thu 5:30–6:15pm · Field 6
+   Division 2: show when "What age/grade is the player during the 2026-27 school year?" is "5 yr. old - Kindergarten"
+     - Option A · Mon 5:30–6:15pm · Field 6
+     - Option B · Mon 6:15–7pm · Field 6
+     - Option C · Tue 6:15–7pm · Field 6
+     - Option D · Tue 6:15–7pm · Field 6
+     - Option E · Wed 6:15–7pm · Field 5
+     - Option F · Thu 6:15–7pm · Field 5
+   Division 3: show when "What age/grade is the player during the 2026-27 school year?" is "1st and 2nd grade"
+     - Option A · Mon 5:30–6:30pm · Field 3
+     - Option B · Mon 6:30–7:30pm · Field 4
+     - Option C · Tue 5:30–6:30pm · Field 3
+     - Option D · Tue 6:30–7:30pm · Field 4
+     - Option E · Thu 5:30–6:30pm · Field 3
+     - Option F · Thu 6:30–7:30pm · Field 4
+   Division 4: show when "What age/grade is the player during the 2026-27 school year?" is "3rd and 4th grade"
+     - Option A · Mon 5:30–6:30pm · Field 1
+     - Option B · Mon 5:30–6:30pm · Field 4
+     - Option C · Tue 5:30–6:30pm · Field 1
+     - Option D · Tue 5:30–6:30pm · Field 2
+     - Option E · Thu 5:30–6:30pm · Field 1
+     - Option F · Thu 5:30–6:30pm · Field 2
+   Division 5: show when "What age/grade is the player during the 2026-27 school year?" is "5th and 6th grade"
+     - Option A · Mon 6:30–7:30pm · Field 1
+     - Option B · Mon 6:30–7:30pm · Field 2
+     - Option C · Tue 6:30–7:30pm · Field 1
+     - Option D · Thu 6:30–7:30pm · Field 1
+
+6. Coach request
+   Type: Pulldown (pick one) · optional
+   Division 1: show when "What age/grade is the player during the 2026-27 school year?" is "3-4 years old"
+     - Rachel Reyes
+     - Andrew Thompson
+     - Aaron Wood
+     - Sarah Bailey
+     - Josh Myers
+     - Same coach as last season
+     - No preference
+   Division 2: show when "What age/grade is the player during the 2026-27 school year?" is "5 yr. old - Kindergarten"
+     - Andrea Allen
+     - Courtney Ross
+     - Josh Harris
+     - Chris Thompson
+     - Kyle Walker
+     - Lauren Jackson
+     - Same coach as last season
+     - No preference
+   Division 3: show when "What age/grade is the player during the 2026-27 school year?" is "1st and 2nd grade"
+     - Rachel Ortiz
+     - Nicole Anderson
+     - Eric Richardson
+     - Kyle White
+     - Amber Gomez
+     - Kyle Torres
+     - Same coach as last season
+     - No preference
+   Division 4: show when "What age/grade is the player during the 2026-27 school year?" is "3rd and 4th grade"
+     - Jason Gonzalez
+     - Courtney Jimenez
+     - Adam Price
+     - Lauren Jones
+     - Heather White
+     - Stephanie Torres
+     - Same coach as last season
+     - No preference
+   Division 5: show when "What age/grade is the player during the 2026-27 school year?" is "5th and 6th grade"
+     - Lauren Jimenez
+     - Amanda Wood
+     - Amber Wilson
+     - Nicole Watson
+     - Same coach as last season
+     - No preference
+
+7. Player request 1
+   Type: Short text · optional
+   Help text: A brother, sister or friend your player wants to be with. First and last name, as they'd register.
+
+8. Sibling or friend? (1)
+   Type: Radio (pick one) · optional
+   Options:
+   - Sibling
+   - Friend
+   Note: Show only when "Player request 1" is filled in.
+
+9. Player request 2
+   Type: Short text · optional
+   Help text: Another player request (optional).
+
+10. Sibling or friend? (2)
+   Type: Radio (pick one) · optional
+   Options:
+   - Sibling
+   - Friend
+   Note: Show only when "Player request 2" is filled in.
+
+11. What matters most? (1st)
+   Type: Pulldown (pick one) · optional
+   Help text: When we can’t give everything, what should we protect first?
+   Options:
+   - Practice time
+   - Coach
+   - Friends
+   - Same team as last season
+   Note: SportsEngine has no drag-to-rank, so a 1st and 2nd pulldown stand in for it.
+
+12. What matters most? (2nd)
+   Type: Pulldown (pick one) · optional
+   Options:
+   - Practice time
+   - Coach
+   - Friends
+   - Same team as last season
+
+13. Seasons played at BVAC
+   Type: Pulldown (pick one) · optional
+   Options:
+   - 0
+   - 1
+   - 2
+   - 3
+   - 4
+   - 5+
+   Note: Needed only until the team builder has past rosters to work from.
+
+14. Last season's coach
+   Type: Short text · optional
+
+(existing) Request
+   Type: Short text · optional
+   Note: Already on the form (long text). Keep it for anything else.
+
+Last page text (editable in SportsEngine): "Want to rank every team option or check a friend request? Continue to team preferences."
