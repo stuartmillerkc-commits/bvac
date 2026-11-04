@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { formatWindow, type Division, type Team } from '@bvac/core';
+import { GameList } from '@/components/GameList';
 import { useSeason } from '@/lib/season-store';
 import { coachName, isFirstComeFirstServed, seatInfo } from './helpers';
 import { SeatChip } from './SeatChip';
@@ -51,6 +52,7 @@ export function TeamOptionCard({
           </>
         ) : null}
       </dl>
+      <GameList gameTrackId={team.gameTrackId} summary="See every game" />
       {extra}
       <div>
         <Link

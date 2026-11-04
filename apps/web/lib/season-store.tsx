@@ -16,6 +16,7 @@ import {
   indexSeason,
   type CoachAssignment,
   type DivisionSettings,
+  type Game,
   type GameTrack,
   type Household,
   type ID,
@@ -25,11 +26,14 @@ import {
   type PlacementRunResult,
   type Player,
   type Registration,
+  type ScheduleBuildResult,
   type SeasonData,
   type SeasonIndex,
   type Team,
 } from '@bvac/core';
 import { placeDivision } from '@bvac/engine';
+import { buildSeasonSchedules } from '@bvac/schedule';
+import { applyImport } from '@bvac/se-bridge';
 import { generateSeason } from '@bvac/seed';
 
 const STORAGE_KEY = 'bvac-team-builder-demo-v1';
@@ -78,6 +82,16 @@ export interface DemoEdits {
   coachNotes: CoachNote[];
   /** Per division, the division's fixed placements before each publish, for "Undo publish". */
   publishSnapshots: Record<ID, Placement[][]>;
+  /** Records from SportsEngine imports, merged by id over everything above (new and updated). */
+  imported: ImportedRecords;
+}
+
+/** Upserts from the admin Import page (the bridge's `ImportResult.upserts`). */
+export interface ImportedRecords {
+  people: Person[];
+  households: Household[];
+  players: Player[];
+  registrations: Registration[];
 }
 
 const EMPTY_EDITS: DemoEdits = {
@@ -90,6 +104,7 @@ const EMPTY_EDITS: DemoEdits = {
   coachAssignmentPatches: {},
   coachNotes: [],
   publishSnapshots: {},
+  imported: { people: [], households: [], players: [], registrations: [] },
 };
 
 export interface SeasonState {
@@ -98,6 +113,12 @@ export interface SeasonState {
   index: SeasonIndex;
   /** Engine output per division, recomputed when inputs change. */
   results: Record<ID, PlacementRunResult>;
+  /** Game schedule per division from the schedule builder (by schedule position; stable as kids move). */
+  schedules: ScheduleBuildResult[];
+  /** Every game in the season, all divisions. */
+  games: Game[];
+  /** Plain-words game pattern per game track ("Mostly 9am · 2 games at 10am"). */
+  trackDescriptions: Map<ID, string>;
   edits: DemoEdits;
   /** False until saved edits are read from localStorage after mount (pages can wait before saying "not found"). */
   loaded: boolean;
@@ -113,6 +134,8 @@ export interface SeasonState {
   /** Update fields of one registration (family preferences, confirmed friend matches). */
   patchRegistration: (registrationId: ID, patch: Partial<Registration>) => void;
   setDivisionSettings: (divisionId: ID, patch: Partial<DivisionSettings>) => void;
+  /** Merge records from a SportsEngine import (new ones appended, existing ones replaced). */
+  applyImported: (records: ImportedRecords) => void;
   resetDemo: () => void;
 }
 
@@ -129,7 +152,12 @@ function load(): DemoEdits {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as Partial<DemoEdits>;
-      return { ...EMPTY_EDITS, ...parsed, added: { ...EMPTY_EDITS.added, ...parsed.added } };
+      return {
+        ...EMPTY_EDITS,
+        ...parsed,
+        added: { ...EMPTY_EDITS.added, ...parsed.added },
+        imported: { ...EMPTY_EDITS.imported, ...parsed.imported },
+      };
     }
   } catch {
     // Private windows or blocked storage: start fresh.
@@ -148,7 +176,7 @@ function save(edits: DemoEdits) {
 /** Generated season + edits. Pure, so tests and future server code can reuse it. */
 export function applyEdits(base: SeasonData, edits: DemoEdits): SeasonData {
   const a = edits.added;
-  return {
+  const merged: SeasonData = {
     ...base,
     divisions: base.divisions.map((d) =>
       edits.divisionSettings[d.id] ? { ...d, settings: { ...d.settings, ...edits.divisionSettings[d.id] } } : d,
@@ -165,6 +193,33 @@ export function applyEdits(base: SeasonData, edits: DemoEdits): SeasonData {
       edits.coachAssignmentPatches?.[c.id] ? { ...c, ...edits.coachAssignmentPatches[c.id] } : c,
     ),
   };
+  const im = edits.imported;
+  if (!im || im.people.length + im.households.length + im.players.length + im.registrations.length === 0) return merged;
+  // Imported records replace by id, then preferences-page patches still apply on top.
+  const withImport = applyImport(merged, { upserts: im });
+  return {
+    ...withImport,
+    registrations: withImport.registrations.map((r) => (edits.registrationPatches?.[r.id] ? { ...r, ...edits.registrationPatches[r.id] } : r)),
+  };
+}
+
+function mergeById<T extends { id: ID }>(list: readonly T[], next: readonly T[]): T[] {
+  const byId = new Map(list.map((x) => [x.id, x]));
+  for (const x of next) byId.set(x.id, x);
+  return [...byId.values()];
+}
+
+/**
+ * Game schedules for the whole season. Built by schedule position, without
+ * placements, so game times don't shift while kids move between teams.
+ */
+export function seasonSchedules(data: SeasonData): ScheduleBuildResult[] {
+  try {
+    return buildSeasonSchedules(data);
+  } catch {
+    // A schedule problem should never take down the demo.
+    return [];
+  }
 }
 
 export function SeasonProvider({ children }: { children: ReactNode }) {
@@ -188,6 +243,19 @@ export function SeasonProvider({ children }: { children: ReactNode }) {
   const data = useMemo(() => applyEdits(baseSeason(), edits), [edits]);
   const index = useMemo(() => indexSeason(data), [data]);
 
+  // Only rebuild schedules when what they depend on changes (teams, tracks, coaches, settings).
+  const scheduleKey = useMemo(
+    () => JSON.stringify([data.teams, data.gameTracks, data.coachAssignments.map((c) => [c.personId, c.teamId, c.role]), data.divisions.map((d) => d.settings.gameTimeStyle)]),
+    [data],
+  );
+  const schedules = useMemo(() => seasonSchedules(data), [scheduleKey]);
+  const games = useMemo(() => schedules.flatMap((r) => r.games), [schedules]);
+  const trackDescriptions = useMemo(() => {
+    const out = new Map<ID, string>();
+    for (const r of schedules) for (const t of r.tracks) if (t.description) out.set(t.id, t.description);
+    return out;
+  }, [schedules]);
+
   const results = useMemo(() => {
     const out: Record<ID, PlacementRunResult> = {};
     for (const d of data.divisions) {
@@ -207,6 +275,9 @@ export function SeasonProvider({ children }: { children: ReactNode }) {
       data,
       index,
       results,
+      schedules,
+      games,
+      trackDescriptions,
       edits,
       loaded,
       updateEdits,
@@ -242,9 +313,19 @@ export function SeasonProvider({ children }: { children: ReactNode }) {
           ...e,
           divisionSettings: { ...e.divisionSettings, [divisionId]: { ...e.divisionSettings[divisionId], ...patch } },
         })),
+      applyImported: (records) =>
+        updateEdits((e) => ({
+          ...e,
+          imported: {
+            people: mergeById(e.imported.people, records.people),
+            households: mergeById(e.imported.households, records.households),
+            players: mergeById(e.imported.players, records.players),
+            registrations: mergeById(e.imported.registrations, records.registrations),
+          },
+        })),
       resetDemo: () => updateEdits(() => EMPTY_EDITS),
     }),
-    [data, index, results, edits, loaded, updateEdits],
+    [data, index, results, schedules, games, trackDescriptions, edits, loaded, updateEdits],
   );
   return <SeasonContext.Provider value={value}>{children}</SeasonContext.Provider>;
 }

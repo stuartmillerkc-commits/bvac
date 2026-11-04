@@ -11,6 +11,8 @@ const TABS = [
   { href: '/admin/board/', label: 'Team board' },
   { href: '/admin/compare/', label: 'Compare' },
   { href: '/admin/settings/', label: 'Settings' },
+  { href: '/admin/import/', label: 'Import' },
+  { href: '/admin/exports/', label: 'Exports' },
 ];
 
 export function AdminNav() {

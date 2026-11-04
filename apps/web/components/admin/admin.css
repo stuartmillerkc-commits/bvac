@@ -186,6 +186,11 @@
   border: 1px dashed var(--color-warning);
 }
 
+/* Heat-tinted cells: muted gray fails contrast on the tint, so use full text color. */
+.adm-cell .muted {
+  color: var(--color-text);
+}
+
 /* Team board */
 .adm-board {
   display: grid;

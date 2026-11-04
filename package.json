@@ -12,6 +12,7 @@
     "test": "pnpm -r --if-present test",
     "typecheck": "pnpm -r --if-present typecheck",
     "seed": "pnpm --filter @bvac/seed generate",
-    "check": "pnpm typecheck && pnpm test"
+    "check": "pnpm typecheck && pnpm test",
+    "e2e": "pnpm --filter @bvac/web e2e"
   }
 }

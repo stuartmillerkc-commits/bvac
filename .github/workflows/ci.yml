@@ -23,3 +23,14 @@ jobs:
           pnpm seed
           git diff --exit-code -- packages/seed/data
       - run: pnpm build
+      - name: Install Playwright Chromium
+        run: pnpm --filter @bvac/web exec playwright install --with-deps chromium
+      - name: Smoke tests (pages, accessibility, key flows)
+        run: pnpm --filter @bvac/web e2e
+      - name: Keep Playwright traces from failed tests
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: apps/web/test-results
+          retention-days: 7
