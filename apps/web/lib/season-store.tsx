@@ -16,6 +16,7 @@ import {
   indexSeason,
   type CoachAssignment,
   type DivisionSettings,
+  type GameTrack,
   type Household,
   type ID,
   type ISODateTime,
@@ -41,6 +42,22 @@ export interface AddedRecords {
   registrations: Registration[];
   coachAssignments: CoachAssignment[];
   teams: Team[];
+  /** New schedule positions, when a coach claims a slot and every track is taken. */
+  gameTracks: GameTrack[];
+}
+
+/** A coach's note for the admins: a kid flagged for review, or a proposed swap. */
+export interface CoachNote {
+  id: ID;
+  at: ISODateTime;
+  authorPersonId: ID;
+  teamId: ID;
+  kind: 'flag' | 'swap';
+  registrationId: ID;
+  /** Swap only: the kid on the other team. */
+  otherRegistrationId?: ID;
+  text?: string;
+  status: 'open' | 'done' | 'dismissed';
 }
 
 export interface DemoEdits {
@@ -55,15 +72,24 @@ export interface DemoEdits {
   fixed: Placement[];
   /** Show the season as of this moment (registrations "trickling in"); null = all. */
   asOf: ISODateTime | null;
+  /** Field changes to coach assignments (protected picks), by assignment id. */
+  coachAssignmentPatches: Record<ID, Partial<CoachAssignment>>;
+  /** Notes from coaches to admins. */
+  coachNotes: CoachNote[];
+  /** Per division, the division's fixed placements before each publish, for "Undo publish". */
+  publishSnapshots: Record<ID, Placement[][]>;
 }
 
 const EMPTY_EDITS: DemoEdits = {
-  added: { people: [], households: [], players: [], registrations: [], coachAssignments: [], teams: [] },
+  added: { people: [], households: [], players: [], registrations: [], coachAssignments: [], teams: [], gameTracks: [] },
   teamPatches: {},
   registrationPatches: {},
   divisionSettings: {},
   fixed: [],
   asOf: null,
+  coachAssignmentPatches: {},
+  coachNotes: [],
+  publishSnapshots: {},
 };
 
 export interface SeasonState {
@@ -128,13 +154,16 @@ export function applyEdits(base: SeasonData, edits: DemoEdits): SeasonData {
       edits.divisionSettings[d.id] ? { ...d, settings: { ...d.settings, ...edits.divisionSettings[d.id] } } : d,
     ),
     teams: [...base.teams, ...a.teams].map((t) => (edits.teamPatches[t.id] ? { ...t, ...edits.teamPatches[t.id] } : t)),
+    gameTracks: [...base.gameTracks, ...a.gameTracks],
     people: [...base.people, ...a.people],
     households: [...base.households, ...a.households],
     players: [...base.players, ...a.players],
     registrations: [...base.registrations, ...a.registrations].map((r) =>
       edits.registrationPatches?.[r.id] ? { ...r, ...edits.registrationPatches[r.id] } : r,
     ),
-    coachAssignments: [...base.coachAssignments, ...a.coachAssignments],
+    coachAssignments: [...base.coachAssignments, ...a.coachAssignments].map((c) =>
+      edits.coachAssignmentPatches?.[c.id] ? { ...c, ...edits.coachAssignmentPatches[c.id] } : c,
+    ),
   };
 }
 
@@ -195,6 +224,7 @@ export function SeasonProvider({ children }: { children: ReactNode }) {
             registrations: [...e.added.registrations, ...(records.registrations ?? [])],
             coachAssignments: [...e.added.coachAssignments, ...(records.coachAssignments ?? [])],
             teams: [...e.added.teams, ...(records.teams ?? [])],
+            gameTracks: [...e.added.gameTracks, ...(records.gameTracks ?? [])],
           },
         })),
       patchTeam: (teamId, patch) =>

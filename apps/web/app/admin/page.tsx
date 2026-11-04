@@ -1,9 +1,8 @@
-import { Placeholder } from '@/components/Placeholder';
+import type { Metadata } from 'next';
+import { Dashboard } from '@/components/admin/Dashboard';
+
+export const metadata: Metadata = { title: 'Admin dashboard · BVAC Team Builder' };
 
 export default function Page() {
-  return (
-    <Placeholder task="Task 5" title="Admin dashboard">
-      Per division: registrations by window, projected teams vs needed, seats left, flags, and the day-by-time demand grid. Links to the team board, rounds, compare view and exports.
-    </Placeholder>
-  );
+  return <Dashboard />;
 }

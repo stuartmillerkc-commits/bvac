@@ -1,9 +1,13 @@
-import { Placeholder } from '@/components/Placeholder';
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import { SettingsForm } from '@/components/admin/SettingsForm';
+
+export const metadata: Metadata = { title: 'Division settings · BVAC Team Builder' };
 
 export default function Page() {
   return (
-    <Placeholder task="Task 5" title="Division settings">
-      Every rule from the design doc as an editable setting per division: model, team sizes, protected picks, siblings, request limit, factor weights, priority points.
-    </Placeholder>
+    <Suspense fallback={<p className="muted">Loading…</p>}>
+      <SettingsForm />
+    </Suspense>
   );
 }
