@@ -1,0 +1,23 @@
+{
+  "name": "@bvac/engine",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Placement engine: ranked-choice team placement with priority rules (Task 1).",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@bvac/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@bvac/seed": "workspace:*",
+    "@types/node": "22.20.5",
+    "typescript": "5.9.3",
+    "vitest": "5.1.0"
+  }
+}
