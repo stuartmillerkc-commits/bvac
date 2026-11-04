@@ -14,11 +14,11 @@ A **working, self-contained demo** a BVAC parent can show BVAC admins: realistic
 | --- | --- | --- | --- | --- |
 | 0 | Setup: repo, types, sample season, contracts, app shell | everything below, initially | — | Done |
 | 1 | Placement engine | `packages/engine` | 2, 3, 4, 5 | Done |
-| 2 | Schedule builder | `packages/schedule` | 1, 3, 4, 5 | |
-| 3 | SportsEngine bridge | `packages/se-bridge` | 1, 2, 4, 5 | |
-| 4 | Family pages | `apps/web/app/{finder,register,preferences}`, `apps/web/components/family` | 1, 2, 3, 5 | |
-| 5 | Admin and coach pages | `apps/web/app/{admin,coach}`, `apps/web/components/admin` | 1–4 (uses the stub engine until 1 merges) | |
-| 6 | Integration, demo polish, deploy | anything | — (after 1–5 merge) | |
+| 2 | Schedule builder | `packages/schedule` | 1, 3, 4, 5 | Done |
+| 3 | SportsEngine bridge | `packages/se-bridge` | 1, 2, 4, 5 | Done |
+| 4 | Family pages | `apps/web/app/{finder,register,preferences}`, `apps/web/components/family` | 1, 2, 3, 5 | Done |
+| 5 | Admin and coach pages | `apps/web/app/{admin,coach}`, `apps/web/components/admin` | 1–4 (uses the stub engine until 1 merges) | Done |
+| 6 | Integration, demo polish, deploy | anything | — (after 1–5 merge) | Done |
 
 Steps 1–5 each touch only the folders they own. Shared files (`packages/core`, `apps/web/lib`, `apps/web/app/layout.tsx`, `globals.css`) change only if a task truly needs it. If you change one, keep the change small and additive, and say so in the PR description, because parallel tasks depend on it.
 

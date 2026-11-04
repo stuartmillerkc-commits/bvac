@@ -7,6 +7,7 @@ import { useSeason } from '@/lib/season-store';
 import { AdminHeader } from './AdminNav';
 import { AsOfControl } from './AsOfControl';
 import { DemandGrid } from './DemandGrid';
+import { ReplayFeed } from './ReplayFeed';
 import { activeTeams, placementMap, registrationsAsOf, roundStatus, sortedDivisions } from './model';
 
 const MODEL_LABEL = {
@@ -30,6 +31,7 @@ export function Dashboard() {
         <ResetButton onReset={resetDemo} />
       </AdminHeader>
       <AsOfControl />
+      <ReplayFeed />
 
       <section className="card adm-stack" aria-labelledby="divisions-title">
         <h2 id="divisions-title" style={{ margin: 0 }}>

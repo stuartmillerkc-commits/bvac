@@ -255,3 +255,112 @@ th {
   font-size: 13px;
   color: var(--color-text-muted);
 }
+
+/* Shared game list (Team Finder, coach view, team board). */
+.game-list {
+  font-size: 14px;
+}
+
+.game-list summary {
+  cursor: pointer;
+  color: var(--color-primary);
+  font-weight: 600;
+  padding: 4px 0;
+}
+
+.game-list table {
+  margin-top: 4px;
+}
+
+.game-list td,
+.game-list th {
+  padding: 4px 8px 4px 0;
+}
+
+@media print {
+  .site-header,
+  .demo-banner,
+  .site-footer,
+  .no-print,
+  .adm-tabs {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .print-area {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .table-wrap {
+    overflow: visible;
+  }
+}
+
+.feed {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.feed-day + .feed-day {
+  border-top: 1px solid var(--color-border);
+}
+
+.tour-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.tour-step {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 16px;
+}
+
+.tour-step h2 {
+  font-size: 20px;
+  margin: 2px 0 8px;
+}
+
+.tour-step ul {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+
+.tour-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+}
+
+.tour-who {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tour-point {
+  background: var(--color-info-bg);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .tour-step {
+    grid-template-columns: 1fr;
+  }
+}

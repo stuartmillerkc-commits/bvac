@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useState, type DragEvent, type ReactNode } from 'react';
 import { compareStrings, formatWindow, fullName, type ID, type Placement, type Registration, type Team } from '@bvac/core';
 import { useSeason, type CoachNote } from '@/lib/season-store';
+import { GameList } from '@/components/GameList';
 import { AdminHeader, DivisionPills } from './AdminNav';
 import { KidCard } from './KidCard';
 import { RoundsPanel } from './RoundsPanel';
@@ -244,9 +245,10 @@ function TeamColumn({
   dropProps: Record<string, unknown>;
   children: ReactNode;
 }) {
-  const { index } = useSeason();
+  const { index, trackDescriptions } = useSeason();
   const { slot, field } = teamPractice(index, team);
   const track = team.gameTrackId ? index.gameTrack.get(team.gameTrackId) : undefined;
+  const pattern = team.gameTrackId ? trackDescriptions.get(team.gameTrackId) : undefined;
   const size = index.division.get(team.divisionId)!.settings.teamSize;
   return (
     <section className={`adm-col${drop ? ' drop' : ''}`} aria-label={team.label} {...dropProps}>
@@ -261,8 +263,9 @@ function TeamColumn({
         </div>
         <div className="adm-small">Coach {coachName(index, team.id)}</div>
         <div className="adm-small muted">
-          {track ? `Games: schedule position ${track.position}${track.description ? ` · ${track.description}` : ''}` : 'No game track yet'}
+          {track ? `Games: ${pattern || `schedule position ${track.position}`}` : 'No game track yet'}
         </div>
+        <GameList gameTrackId={team.gameTrackId} summary="Games" />
       </div>
       <SizeBar n={kids.length} {...size} />
       {children}

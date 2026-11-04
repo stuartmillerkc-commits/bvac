@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { formatDate } from '@bvac/core';
-import { ENGINE_IS_STUB } from '@bvac/engine';
 import { useSeason } from '@/lib/season-store';
 
 export default function Home() {
@@ -16,6 +15,14 @@ export default function Home() {
           Coaches pick practice nights first. Families see real team options, with practice and game times, before they register in
           SportsEngine. As registrations come in, teams build themselves using BVAC&apos;s rules for siblings, friends, seniority and
           team size, and admins and coaches review before anything is final.
+        </p>
+        <p style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+          <Link className="button" href="/tour/">
+            Take the 10-minute tour
+          </Link>
+          <Link className="button secondary" href="/finder/">
+            Browse teams as a family
+          </Link>
         </p>
       </section>
 
@@ -64,11 +71,6 @@ export default function Home() {
             </tbody>
           </table>
         </div>
-        {ENGINE_IS_STUB && (
-          <p className="muted" style={{ fontSize: 13 }}>
-            Placement numbers come from the placeholder engine (first come, first served) until Task 1 lands.
-          </p>
-        )}
       </section>
     </>
   );

@@ -15,7 +15,6 @@ import {
   type Person,
   type Team,
 } from '@bvac/core';
-import { buildSchedule } from '@bvac/schedule';
 import { useSeason, type CoachNote } from '@/lib/season-store';
 import { RequestChips } from './KidCard';
 import { SizeBar } from './Board';
@@ -513,12 +512,9 @@ function ProtectedPicks({ assignment, team }: { assignment: CoachAssignment; tea
 }
 
 function GameSchedule({ team }: { team: Team }) {
-  const { data, index } = useSeason();
-  const division = index.division.get(team.divisionId)!;
-  const schedule = useMemo(
-    () => buildSchedule({ data, divisionId: division.id, style: division.settings.gameTimeStyle }),
-    [data, division.id, division.settings.gameTimeStyle],
-  );
+  const { data, index, schedules } = useSeason();
+  // The season-wide schedule from the store, so coaches see the same games as families.
+  const schedule = schedules.find((r) => r.divisionId === team.divisionId) ?? { games: [], tracks: [] };
   const trackId = team.gameTrackId;
   if (!trackId) return <p className="muted adm-small">No game track yet. Game times to be announced.</p>;
   const track = schedule.tracks.find((t) => t.id === trackId) ?? index.gameTrack.get(trackId);
