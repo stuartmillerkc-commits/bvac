@@ -290,7 +290,7 @@ function PreferencesEditor({ registration: r }: { registration: Registration }) 
           {placement.choiceRankMet ? ` (your ${ordinal(placement.choiceRankMet)} choice)` : ''}. This can still change until rosters publish.
         </p>
       ) : (
-        <p className="muted" style={{ margin: 0, fontSize: 14 }}>
+        <p className="muted" style={{ margin: 0, fontSize: 'var(--text-sm)' }}>
           Teams aren&apos;t shown to families until BVAC publishes them: round 1 on {formatDate(season.round1Publish)}, round 2 on{' '}
           {formatDate(season.round2Publish)}.
         </p>

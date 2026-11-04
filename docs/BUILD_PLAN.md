@@ -31,7 +31,7 @@ Steps 1–5 each touch only the folders they own. Shared files (`packages/core`,
 - **Times** are minutes after midnight, **dates** are `YYYY-MM-DD`, and **timestamps** are ISO with the `-06:00` offset (BVAC is US Central). Format with the helpers in `@bvac/core` (`formatWindow`, `formatDate`, `formatTime`).
 - **Sample data is fictional.** Don't add real names, emails or BVAC staff. Emails use `example.com`, phones use `555`.
 - **Seed changes:** if you change the generator, run `pnpm seed` and commit `packages/seed/data/*`. CI fails if they're out of date.
-- **UI:** use the tokens in `apps/web/app/globals.css` (they cover light and dark themes), keep pages usable at 390px wide, and use plain words that make sense to a parent or volunteer admin. Wording should match DESIGN.md.
+- **UI:** use the tokens and shared components in `apps/web/app/globals.css` (type and spacing scales, colors for light and dark, `.button`, `.badge`, `.card`, tables and form fields; see [visual-pass/README.md](visual-pass/README.md)), keep pages usable at 390px wide, and use plain words that make sense to a parent or volunteer admin. Wording should match DESIGN.md.
 - **Branch and PR:** one branch per task (`task-N-short-name`), one PR into `main`. Use conventional, descriptive commit messages.
 
 ## Task 1 — Placement engine (`packages/engine`)

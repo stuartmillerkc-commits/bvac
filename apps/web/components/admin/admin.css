@@ -1,19 +1,25 @@
-/* Admin and coach pages. Uses the theme tokens from app/globals.css. */
+/* Admin and coach pages. Uses only the tokens and shared components in app/globals.css. */
 
 .adm-stack {
   display: grid;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .adm-stack > * {
   min-width: 0;
 }
 
+.adm-stack > h2,
+.adm-stack > h3,
+.adm-stack > p {
+  margin: 0;
+}
+
 .adm-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
+  gap: var(--space-2) var(--space-3);
 }
 
 .adm-spread {
@@ -21,165 +27,294 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px 16px;
+  gap: var(--space-2) var(--space-4);
 }
 
 .adm-small {
-  font-size: 13px;
+  font-size: var(--text-sm);
 }
+
+/* Page intro under an admin title: secondary, so it recedes. */
+.adm-intro {
+  font-size: var(--text-sm);
+  max-width: 80ch;
+}
+
+/* ------------------------------------------------------------------ navigation */
 
 .adm-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--space-1);
   border-bottom: 1px solid var(--color-border);
-  margin-bottom: 20px;
+  margin-bottom: var(--space-6);
 }
 
 .adm-tabs a {
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
   color: var(--color-text-muted);
   text-decoration: none;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
-  font-size: 15px;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transition:
+    color var(--transition),
+    background var(--transition);
+}
+
+.adm-tabs a:hover {
+  color: var(--color-text);
+  background: var(--color-surface-2);
 }
 
 .adm-tabs a[aria-current='page'] {
   color: var(--color-primary);
   border-bottom-color: var(--color-primary);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 
+@media (max-width: 600px) {
+  .adm-tabs {
+    margin-bottom: var(--space-4);
+  }
+
+  .adm-tabs a {
+    padding: var(--space-2);
+  }
+}
+
+/* Division switcher (D1…D5) and similar toggles: a segmented pill row. */
 .adm-pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-1);
 }
 
 .adm-pills a,
 .adm-pills button {
   font: inherit;
-  font-size: 14px;
-  padding: 4px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  min-height: var(--control-h-sm);
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-strong);
   background: var(--color-surface);
   color: var(--color-text);
   text-decoration: none;
   cursor: pointer;
+  transition:
+    background var(--transition),
+    border-color var(--transition);
+}
+
+.adm-pills a:hover,
+.adm-pills button:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .adm-pills [aria-current='page'],
-.adm-pills [aria-pressed='true'] {
+.adm-pills [aria-pressed='true'],
+.adm-pills [aria-current='page']:hover,
+.adm-pills [aria-pressed='true']:hover {
   background: var(--color-primary);
   border-color: var(--color-primary);
   color: var(--color-primary-contrast);
 }
 
-.button.small,
-.adm-btn {
-  font-size: 14px;
-  padding: 4px 10px;
-}
+/* ------------------------------------------------------------------ buttons and fields */
 
+/* Quiet compact button: same shape as .button.small, no fill. */
 .adm-btn {
   font: inherit;
-  font-size: 13px;
-  line-height: 1.3;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-tight);
+  min-height: var(--control-h-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
   background: var(--color-surface);
   color: var(--color-text);
   cursor: pointer;
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    color var(--transition);
 }
 
 .adm-btn:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
+  background: var(--color-primary-soft);
 }
 
-.button:disabled,
+.adm-btn[aria-pressed='true'] {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
 .adm-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
-.button.danger {
-  background: var(--color-critical);
-  color: var(--color-primary-contrast);
-}
-
-:where(button, a, select, input, summary, [tabindex]):focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+.adm-btn:disabled:hover {
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+  background: var(--color-surface);
 }
 
 .adm-input,
 .adm-select {
-  font: inherit;
-  font-size: 14px;
-  color: var(--color-text);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  padding: 4px 8px;
+  font-size: var(--text-sm);
+  min-height: var(--control-h-sm);
+  padding: var(--space-1) var(--space-2);
   max-width: 100%;
 }
 
-.adm-notice {
+/* ------------------------------------------------------------------ notices */
+
+.adm-notice,
+.adm-next {
+  border: 1px solid color-mix(in srgb, var(--color-primary) 22%, transparent);
   border-left: 4px solid var(--color-primary);
   background: var(--color-info-bg);
-  padding: 10px 12px;
-  border-radius: 6px;
-  font-size: 14px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
 }
 
 .adm-notice.warning {
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
   border-left-color: var(--color-warning);
+  background: var(--color-warning-bg);
 }
+
+.adm-next p {
+  margin: 0;
+}
+
+.adm-next p + p {
+  margin-top: var(--space-1);
+}
+
+/* ------------------------------------------------------------------ stats */
 
 .adm-stat-grid {
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
 }
 
 .adm-stat {
   background: var(--color-surface-2);
-  border-radius: 6px;
-  padding: 8px 10px;
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
 }
 
 .adm-stat b {
   display: block;
-  font-size: 20px;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  line-height: var(--leading-snug);
 }
+
+/* ------------------------------------------------------------------ dashboard */
 
 /* As-of control */
 .adm-asof input[type='range'] {
   flex: 1 1 220px;
   min-width: 0;
-  accent-color: var(--color-primary);
 }
 
-/* Demand grid */
+/* Division table: the action column leads. */
+.adm-cards-table thead th {
+  white-space: normal;
+}
+
+.adm-cards-table tbody th {
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-md);
+}
+
+.adm-cards-table tbody th a {
+  font-weight: var(--weight-bold);
+}
+
+.adm-cards-table td[data-label='Next step'] {
+  white-space: normal;
+  min-width: 190px;
+}
+
+.adm-cards-table td[data-label='To check'] {
+  white-space: normal;
+}
+
+/* The next step for a division, shown as a clear call to action. */
+.adm-action a {
+  display: inline-flex;
+  align-items: center;
+  margin-top: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.adm-action a:hover {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.adm-action > div {
+  font-size: var(--text-xs);
+}
+
+/* Practice demand grid */
 .adm-grid-table td,
 .adm-grid-table th {
   text-align: center;
-  padding: 4px;
+  padding: var(--space-1);
+  border-bottom: 0;
+}
+
+.adm-grid-table thead th {
+  background: none;
+}
+
+.adm-grid-table tbody tr:hover > * {
+  background: none;
 }
 
 .adm-cell {
-  border-radius: 6px;
-  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
   min-width: 64px;
-  font-size: 13px;
-  line-height: 1.25;
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  border: 1px solid transparent;
 }
 
 .adm-cell b {
-  font-size: 15px;
+  font-size: var(--text-md);
 }
 
 .adm-cell.none {
@@ -191,22 +326,109 @@
   color: var(--color-text);
 }
 
-/* Team board */
+/* ------------------------------------------------------------------ rounds panel (board) */
+
+.adm-rounds {
+  border-top: 4px solid var(--color-primary);
+}
+
+.adm-rounds h2 {
+  font-size: var(--text-xl);
+}
+
+/* Round steps: send → coaches approve → publish, with the current step marked. */
+.adm-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.adm-steps li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  padding: var(--space-1) var(--space-3) var(--space-1) var(--space-1);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-2);
+}
+
+.adm-steps li[data-state='current'] {
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  font-weight: var(--weight-semibold);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
+}
+
+.adm-steps li[data-state='done'] {
+  color: var(--color-good);
+  background: var(--color-good-bg);
+}
+
+.adm-step-num {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-muted);
+}
+
+.adm-steps li[data-state='current'] .adm-step-num {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.adm-steps li[data-state='done'] .adm-step-num {
+  background: var(--color-good);
+  border-color: var(--color-good);
+  color: var(--color-surface);
+}
+
+/* "Things to check": stands out when something is urgent. */
+.adm-flags[data-urgent] {
+  border-left: 4px solid var(--color-critical);
+}
+
+.adm-flags summary b {
+  font-size: var(--text-md);
+}
+
+.adm-flags li + li {
+  margin-top: var(--space-1);
+}
+
+/* ------------------------------------------------------------------ team board */
+
 .adm-board {
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   align-items: start;
 }
 
+/* A team column is a sunken lane; kid cards sit on top of it. */
 .adm-col {
-  background: var(--color-surface);
+  background: var(--color-surface-2);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 10px;
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
   display: grid;
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 0;
+  scroll-margin-top: var(--space-4);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
 }
 
 .adm-col.drop {
@@ -215,15 +437,16 @@
 }
 
 .adm-col h3 {
-  margin: 0;
-  font-size: 17px;
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-lg);
 }
 
 .adm-sizebar {
   position: relative;
-  height: 10px;
-  border-radius: 999px;
-  background: var(--color-surface-2);
+  height: 8px;
+  margin-top: var(--space-1);
+  border-radius: var(--radius-pill);
+  background: var(--color-border);
   overflow: hidden;
 }
 
@@ -231,7 +454,7 @@
   position: absolute;
   inset: 0 auto 0 0;
   background: var(--color-good);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
 }
 
 .adm-sizebar.under > span {
@@ -248,17 +471,19 @@
   bottom: 0;
   width: 2px;
   background: var(--color-text-muted);
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
+/* Kid card */
 .adm-card {
   border: 1px solid var(--color-border);
-  border-radius: 6px;
-  padding: 8px;
-  background: var(--color-bg);
-  font-size: 14px;
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--text-sm);
   display: grid;
-  gap: 4px;
+  gap: var(--space-1);
   min-width: 0;
 }
 
@@ -266,8 +491,15 @@
   cursor: grab;
 }
 
+.adm-card[draggable='true']:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow);
+}
+
 .adm-card.locked {
-  border-left: 3px solid var(--color-primary);
+  box-shadow:
+    inset 3px 0 0 var(--color-primary),
+    var(--shadow-sm);
 }
 
 .adm-card.flash {
@@ -275,26 +507,24 @@
 }
 
 .adm-card .name {
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-md);
 }
 
 .adm-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-}
-
-.adm-chips .badge {
-  font-size: 11px;
-  padding: 1px 6px;
+  gap: var(--space-1);
 }
 
 .badge.state-proposed {
+  background: var(--color-primary-soft);
   color: var(--color-primary);
 }
 
 .badge.state-approved,
 .badge.state-published {
+  background: var(--color-good-bg);
   color: var(--color-good);
 }
 
@@ -304,71 +534,138 @@
 }
 
 .adm-reasons {
-  margin: 4px 0 0;
-  padding-left: 18px;
-  font-size: 13px;
+  margin: var(--space-1) 0 0;
+  padding-left: var(--space-5);
+  font-size: var(--text-xs);
   color: var(--color-text-muted);
 }
 
 .adm-card summary {
-  cursor: pointer;
-  font-size: 13px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
   color: var(--color-primary);
+  padding: var(--space-0) 0;
 }
 
 .adm-card-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-2);
   align-items: center;
+  padding-top: var(--space-2);
+  margin-top: var(--space-1);
+  border-top: 1px solid var(--color-border);
 }
 
 .adm-card-actions .adm-select {
-  font-size: 13px;
-  padding: 2px 4px;
+  font-size: var(--text-xs);
   flex: 1 1 120px;
   min-width: 0;
 }
 
-/* Compare */
+.adm-card-actions .adm-btn {
+  font-size: var(--text-xs);
+}
+
+/* Jump links to each team column (long boards on phones). */
+.adm-jump {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.adm-jump a {
+  padding: var(--space-0) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  text-decoration: none;
+  font-weight: var(--weight-medium);
+}
+
+.adm-jump a:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.adm-plain-link,
+.adm-plain-link:hover {
+  text-decoration: none;
+}
+
+/* Badge legend on the board and coach roster. */
+.adm-legend {
+  font-size: var(--text-sm);
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+}
+
+.adm-legend dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-2) var(--space-3);
+  margin: var(--space-3) 0 var(--space-1);
+  align-items: center;
+}
+
+.adm-legend dd {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+/* Disclosure cards (legend, things to check): compact. */
+details.card {
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+}
+
+details.card > summary {
+  padding: var(--space-1) 0;
+}
+
+/* ------------------------------------------------------------------ compare */
+
 .adm-compare td.better {
   color: var(--color-good);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 
 .adm-compare td.worse {
   color: var(--color-warning);
 }
 
-/* Settings form */
+/* ------------------------------------------------------------------ settings form */
+
 .adm-form fieldset {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  padding: 12px 16px 16px;
+  padding: var(--space-3) var(--space-4) var(--space-4);
   margin: 0;
   display: grid;
-  gap: 14px;
+  gap: var(--space-4);
   min-width: 0;
 }
 
 .adm-form legend {
-  font-weight: 700;
-  padding: 0 4px;
+  font-weight: var(--weight-bold);
+  padding: 0 var(--space-1);
 }
 
 .adm-field {
   display: grid;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .adm-field > label,
 .adm-field > .label {
-  font-weight: 600;
-  font-size: 15px;
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
 }
 
 .adm-field .help {
-  font-size: 13px;
+  font-size: var(--text-xs);
   color: var(--color-text-muted);
   margin: 0;
 }
@@ -380,24 +677,24 @@
 .adm-inline-fields {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 16px;
+  gap: var(--space-2) var(--space-4);
 }
 
 .adm-inline-fields label {
   display: grid;
-  gap: 2px;
-  font-size: 14px;
+  gap: var(--space-0);
+  font-size: var(--text-sm);
 }
 
 .adm-check {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   align-items: flex-start;
-  font-size: 15px;
+  font-size: var(--text-sm);
 }
 
 .adm-check input {
-  margin-top: 4px;
+  margin-top: var(--space-1);
 }
 
 .adm-sticky-save {
@@ -405,35 +702,47 @@
   bottom: 0;
   background: var(--color-surface);
   border-top: 1px solid var(--color-border);
-  padding: 12px 0;
+  padding: var(--space-3) 0;
 }
 
-/* Roster lists (coach) */
+/* ------------------------------------------------------------------ coach view */
+
+.adm-coach-team h2 {
+  font-size: var(--text-xl);
+}
+
 .adm-roster {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .adm-roster > li {
   border: 1px solid var(--color-border);
-  border-radius: 6px;
-  padding: 10px;
+  border-radius: var(--radius);
+  padding: var(--space-3);
   display: grid;
-  gap: 4px;
-  font-size: 14px;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  background: var(--color-surface);
+}
+
+.adm-roster > li > :first-child b,
+.adm-roster .name {
+  font-size: var(--text-md);
 }
 
 .adm-games {
-  font-size: 14px;
+  font-size: var(--text-sm);
 }
 
 @media (max-width: 600px) {
   .adm-hide-sm {
     display: none;
   }
+
   .adm-board {
     grid-template-columns: 1fr;
   }
@@ -448,100 +757,9 @@
   white-space: nowrap;
 }
 
-/* Round steps: send → coaches approve → publish, with the current step marked. */
-.adm-steps {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 16px;
-  font-size: 14px;
-}
-
-.adm-steps li {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--color-text-muted);
-}
-
-.adm-steps li[data-state='current'] {
-  color: var(--color-text);
-  font-weight: 600;
-}
-
-.adm-step-num {
-  display: inline-grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 1px solid var(--color-border);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.adm-steps li[data-state='current'] .adm-step-num {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: var(--color-primary-contrast);
-}
-
-.adm-steps li[data-state='done'] .adm-step-num {
-  border-color: var(--color-good);
-  color: var(--color-good);
-}
-
-/* "What to do next" message under a step list. */
-.adm-next {
-  border-left: 4px solid var(--color-primary);
-  background: var(--color-info-bg);
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-.adm-next p {
-  margin: 0;
-}
-
-.adm-next p + p {
-  margin-top: 4px;
-}
-
-/* Badge legend on the board and coach roster. */
-.adm-legend {
-  font-size: 14px;
-}
-
-.adm-legend dl {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: 6px 12px;
-  margin: 8px 0 0;
-  align-items: center;
-}
-
-.adm-legend dd {
-  margin: 0;
-  color: var(--color-text-muted);
-}
-
-/* Jump links to each team column (long boards on phones). */
-.adm-jump {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  font-size: 14px;
-}
-
-.adm-plain-link,
-.adm-plain-link:hover {
-  text-decoration: none;
-}
-
-/* Division table becomes one card per division on phones, so nothing hides off-screen. */
+/* ------------------------------------------------------------------ phone dashboard
+ * The division table becomes one card per division on phones, so nothing hides off-screen.
+ */
 @media (max-width: 720px) {
   .adm-cards-table thead {
     position: absolute;
@@ -562,23 +780,35 @@
 
   .adm-cards-table tr {
     border: 1px solid var(--color-border);
-    border-radius: 8px;
-    padding: 8px 12px;
-    margin-bottom: 10px;
+    border-radius: var(--radius);
+    padding: var(--space-3) var(--space-3) var(--space-2);
+    margin-bottom: var(--space-3);
+    background: var(--color-surface);
+  }
+
+  .adm-cards-table tbody tr:hover > * {
+    background: none;
   }
 
   .adm-cards-table th,
   .adm-cards-table td {
     border: 0;
-    padding: 4px 0;
+    padding: var(--space-1) 0;
+    white-space: normal;
+  }
+
+  .adm-cards-table tbody th {
+    padding-bottom: var(--space-2);
   }
 
   .adm-cards-table td {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 12px;
+    gap: var(--space-3);
     text-align: right;
+    border-top: 1px solid var(--color-border);
+    padding: var(--space-2) 0;
   }
 
   .adm-cards-table td::before {
@@ -588,15 +818,36 @@
     flex-shrink: 0;
     max-width: 45%;
   }
-}
 
-@media (max-width: 720px) {
-  .adm-cards-table th,
-  .adm-cards-table td {
-    white-space: normal;
+  .adm-cards-table td[data-label='Next step'] {
+    min-width: 0;
+  }
+
+  .adm-cards-table .adm-chips {
+    justify-content: flex-end;
   }
 }
 
 .adm-cards-table .badge {
   white-space: nowrap;
+}
+
+/* Coach roster: players waiting on the coach stand out. */
+.adm-roster > li[data-state='proposed'] {
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+  box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+/* Eight columns at laptop width: tighter cells so nothing scrolls out of view. */
+@media (min-width: 721px) {
+  .adm-cards-table th,
+  .adm-cards-table td {
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+  }
+
+  .adm-cards-table tbody th {
+    white-space: normal;
+    min-width: 170px;
+  }
 }

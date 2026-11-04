@@ -50,7 +50,7 @@ export function ImportPage() {
       </p>
 
       <section className="card adm-stack" aria-labelledby="imp-file">
-        <h2 id="imp-file" style={{ margin: 0, fontSize: 18 }}>
+        <h2 id="imp-file" style={{ margin: 0 }}>
           1. Choose a file
         </h2>
         <div className="adm-row">
@@ -93,7 +93,7 @@ export function ImportPage() {
       {file && result && (
         <>
           <section className="card adm-stack" aria-labelledby="imp-map">
-            <h2 id="imp-map" style={{ margin: 0, fontSize: 18 }}>
+            <h2 id="imp-map" style={{ margin: 0 }}>
               2. Check the columns
             </h2>
             <p className="muted adm-small" style={{ margin: 0 }}>
@@ -102,7 +102,7 @@ export function ImportPage() {
             </p>
             <details>
               <summary className="adm-small">Show the column mapping</summary>
-              <div className="table-wrap">
+              <div className="table-wrap" tabIndex={0}>
                 <table>
                   <thead>
                     <tr>
@@ -144,7 +144,7 @@ export function ImportPage() {
           </section>
 
           <section className="card adm-stack" aria-labelledby="imp-report">
-            <h2 id="imp-report" style={{ margin: 0, fontSize: 18 }}>
+            <h2 id="imp-report" style={{ margin: 0 }}>
               3. Review the import
             </h2>
             <div className="adm-chips">
@@ -166,7 +166,7 @@ export function ImportPage() {
               </ul>
             )}
             {created.length > 0 && (
-              <div className="table-wrap">
+              <div className="table-wrap" tabIndex={0}>
                 <table>
                   <caption className="adm-small muted" style={{ textAlign: 'left' }}>
                     New registrations

@@ -161,7 +161,7 @@ export function TeamFinder() {
         ) : null}
       </section>
 
-      <p className="muted" style={{ fontSize: 14 }}>
+      <p className="muted" style={{ fontSize: 'var(--text-sm)' }}>
         All practices and games are at the BVAC Holke Rd. complex. Practices run {formatDate(season.practices.start)} –{' '}
         {formatDate(season.practices.end)}; games are on Saturdays from {formatDate(season.gameDates[0] ?? season.practices.start)}. Grades
         are for the {schoolYearLabel(season)} school year.
