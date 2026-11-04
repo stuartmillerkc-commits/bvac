@@ -47,6 +47,8 @@ export interface DemoEdits {
   added: AddedRecords;
   /** Field changes to generated teams, by team id. */
   teamPatches: Record<ID, Partial<Team>>;
+  /** Field changes to registrations (generated or added), by id: e.g. the family preferences page. */
+  registrationPatches: Record<ID, Partial<Registration>>;
   /** Per-division setting overrides. */
   divisionSettings: Record<ID, Partial<DivisionSettings>>;
   /** Placements admins locked or published; the engine never moves these. */
@@ -58,6 +60,7 @@ export interface DemoEdits {
 const EMPTY_EDITS: DemoEdits = {
   added: { people: [], households: [], players: [], registrations: [], coachAssignments: [], teams: [] },
   teamPatches: {},
+  registrationPatches: {},
   divisionSettings: {},
   fixed: [],
   asOf: null,
@@ -70,6 +73,8 @@ export interface SeasonState {
   /** Engine output per division, recomputed when inputs change. */
   results: Record<ID, PlacementRunResult>;
   edits: DemoEdits;
+  /** False until saved edits are read from localStorage after mount (pages can wait before saying "not found"). */
+  loaded: boolean;
   /** Apply any change to the edits; saved automatically. */
   updateEdits: (fn: (prev: DemoEdits) => DemoEdits) => void;
   fixed: Placement[];
@@ -79,6 +84,8 @@ export interface SeasonState {
   /** Add a family's records from the mock registration form. */
   addRecords: (records: Partial<AddedRecords>) => void;
   patchTeam: (teamId: ID, patch: Partial<Team>) => void;
+  /** Update fields of one registration (family preferences, confirmed friend matches). */
+  patchRegistration: (registrationId: ID, patch: Partial<Registration>) => void;
   setDivisionSettings: (divisionId: ID, patch: Partial<DivisionSettings>) => void;
   resetDemo: () => void;
 }
@@ -124,17 +131,21 @@ export function applyEdits(base: SeasonData, edits: DemoEdits): SeasonData {
     people: [...base.people, ...a.people],
     households: [...base.households, ...a.households],
     players: [...base.players, ...a.players],
-    registrations: [...base.registrations, ...a.registrations],
+    registrations: [...base.registrations, ...a.registrations].map((r) =>
+      edits.registrationPatches?.[r.id] ? { ...r, ...edits.registrationPatches[r.id] } : r,
+    ),
     coachAssignments: [...base.coachAssignments, ...a.coachAssignments],
   };
 }
 
 export function SeasonProvider({ children }: { children: ReactNode }) {
   const [edits, setEdits] = useState<DemoEdits>(EMPTY_EDITS);
+  const [loaded, setLoaded] = useState(false);
 
   // Load saved edits after mount so the server render and first client render match.
   useEffect(() => {
     setEdits(load());
+    setLoaded(true);
   }, []);
 
   const updateEdits = useCallback((fn: (prev: DemoEdits) => DemoEdits) => {
@@ -168,6 +179,7 @@ export function SeasonProvider({ children }: { children: ReactNode }) {
       index,
       results,
       edits,
+      loaded,
       updateEdits,
       fixed: edits.fixed,
       setFixed: (next) => updateEdits((e) => ({ ...e, fixed: next })),
@@ -187,6 +199,14 @@ export function SeasonProvider({ children }: { children: ReactNode }) {
         })),
       patchTeam: (teamId, patch) =>
         updateEdits((e) => ({ ...e, teamPatches: { ...e.teamPatches, [teamId]: { ...e.teamPatches[teamId], ...patch } } })),
+      patchRegistration: (registrationId, patch) =>
+        updateEdits((e) => ({
+          ...e,
+          registrationPatches: {
+            ...e.registrationPatches,
+            [registrationId]: { ...e.registrationPatches?.[registrationId], ...patch },
+          },
+        })),
       setDivisionSettings: (divisionId, patch) =>
         updateEdits((e) => ({
           ...e,
@@ -194,7 +214,7 @@ export function SeasonProvider({ children }: { children: ReactNode }) {
         })),
       resetDemo: () => updateEdits(() => EMPTY_EDITS),
     }),
-    [data, index, results, edits, updateEdits],
+    [data, index, results, edits, loaded, updateEdits],
   );
   return <SeasonContext.Provider value={value}>{children}</SeasonContext.Provider>;
 }
