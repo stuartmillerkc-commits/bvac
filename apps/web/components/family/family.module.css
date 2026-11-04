@@ -682,3 +682,16 @@
     flex-direction: column;
   }
 }
+
+/* Team card call to action, with a note when the team is full. */
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.cta > span {
+  flex: 1 1 220px;
+  font-size: 14px;
+}

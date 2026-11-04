@@ -197,9 +197,12 @@ export function teamOfFrom(map: Map<ID, Placement>): TeamOf {
   return (id) => map.get(id)?.teamId;
 }
 
+/** Plain words for flag severities (the engine's critical / warning / info). */
+export const SEVERITY_LABEL = { critical: 'Urgent', warning: 'Check', info: 'Note' } as const;
+
 export const STATE_LABEL: Record<PlacementState, string> = {
   projected: 'Projected',
-  proposed: 'Sent to coach',
+  proposed: 'Waiting for coach',
   approved: 'Approved',
   published: 'Published',
   waitlisted: 'Waitlist',
@@ -296,6 +299,10 @@ export interface RoundStatus {
   published: number;
   pinned: number;
   canUndo: boolean;
+  /** Placements of the current round already sent to coaches (waiting or approved). */
+  sent: number;
+  /** Published placements from the most recent published round. */
+  lastPublished: number;
 }
 
 export function roundStatus(index: SeasonIndex, fixed: Placement[], divisionId: ID, snapshots: Placement[][] | undefined): RoundStatus {
@@ -309,6 +316,8 @@ export function roundStatus(index: SeasonIndex, fixed: Placement[], divisionId: 
     published: published.length,
     pinned: own.filter((p) => p.locked && p.state !== 'published').length,
     canUndo: (snapshots?.length ?? 0) > 0,
+    sent: current === 'done' ? 0 : own.filter((p) => p.round === current && (p.state === 'proposed' || p.state === 'approved')).length,
+    lastPublished: published.filter((p) => p.round === (current === 'done' ? 2 : 1)).length,
   };
 }
 

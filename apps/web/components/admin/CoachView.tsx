@@ -16,7 +16,7 @@ import {
   type Team,
 } from '@bvac/core';
 import { useSeason, type CoachNote } from '@/lib/season-store';
-import { RequestChips } from './KidCard';
+import { BadgeLegend, RequestChips } from './KidCard';
 import { SizeBar } from './Board';
 import {
   STATE_LABEL,
@@ -44,8 +44,9 @@ export function CoachView() {
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const { data, index, addRecords } = useSeason();
+  const { data, index, addRecords, fixed } = useSeason();
   const personId = params.get('as') ?? '';
+  const toApprove = (teamId: ID) => fixed.filter((p) => p.teamId === teamId && p.state === 'proposed').length;
 
   const heads = useMemo(() => {
     const list = data.coachAssignments
@@ -54,6 +55,7 @@ export function CoachView() {
       .filter((x): x is { c: CoachAssignment; person: Person; team: Team } => !!x.person && !!x.team);
     return list;
   }, [data, index]);
+  const waitingCoaches = heads.filter((h) => toApprove(h.team.id) > 0);
   const newCoaches = NEW_DEMO_COACHES.filter((p) => !data.coachAssignments.some((c) => c.personId === p.id));
   const person = index.person.get(personId) ?? NEW_DEMO_COACHES.find((p) => p.id === personId);
 
@@ -79,6 +81,7 @@ export function CoachView() {
                   .map((h) => (
                     <option key={h.c.id} value={h.person.id}>
                       {fullName(h.person)} · {h.team.label}
+                      {toApprove(h.team.id) ? ` · ${toApprove(h.team.id)} to approve` : ''}
                     </option>
                   ))}
               </optgroup>
@@ -98,9 +101,31 @@ export function CoachView() {
       {!person ? (
         <div className="card">
           <p style={{ marginTop: 0 }}>
-            Pick a coach to see what they see: their practice slot, game schedule and projected roster, with each kid&apos;s reasons. Coaches can
+            Pick a coach above to see what they see: their practice slot, game schedule and projected roster, with each kid&apos;s reasons. Coaches can
             approve a roster, flag a kid, propose a swap and make protected picks.
           </p>
+          {waitingCoaches.length > 0 && (
+            <div className="adm-next" style={{ marginBottom: 12 }}>
+              <p>
+                <b>Waiting for approval:</b>{' '}
+                {waitingCoaches.slice(0, 6).map((h, i) => (
+                  <span key={h.c.id}>
+                    {i > 0 && ', '}
+                    <a
+                      href={`?as=${h.person.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        signIn(h.person.id);
+                      }}
+                    >
+                      {fullName(h.person)} ({index.division.get(h.team.divisionId)?.name} · {h.team.label})
+                    </a>
+                  </span>
+                ))}
+                {waitingCoaches.length > 6 ? `, and ${waitingCoaches.length - 6} more` : ''}
+              </p>
+            </div>
+          )}
           <p className="muted" style={{ marginBottom: 0 }}>
             Try one of the two new coaches to claim an open practice slot and schedule position. Their team shows up in the Team Finder right
             away.
@@ -135,7 +160,7 @@ function CoachHome({ person }: { person: Person }) {
 }
 
 function TeamPanel({ person, assignment, team }: { person: Person; assignment: CoachAssignment; team: Team }) {
-  const { index, results, updateEdits, edits, asOf } = useSeason();
+  const { data, index, results, updateEdits, edits, asOf } = useSeason();
   const division = index.division.get(team.divisionId)!;
   const map = placementMap(results[division.id]);
   const teamOf = teamOfFrom(map);
@@ -151,6 +176,9 @@ function TeamPanel({ person, assignment, team }: { person: Person; assignment: C
     });
   const proposed = roster.filter((x) => x.p.state === 'proposed').length;
   const approved = roster.filter((x) => x.p.state === 'approved').length;
+  const published = roster.filter((x) => x.p.state === 'published').length;
+  const pendingRound = roster.find((x) => x.p.state === 'approved' || x.p.state === 'proposed')?.p.round;
+  const publishDate = pendingRound === 1 ? data.season.round1Publish : pendingRound === 2 ? data.season.round2Publish : undefined;
   const myNotes = edits.coachNotes.filter((n) => n.teamId === team.id);
   const addNote = (note: Omit<CoachNote, 'id' | 'at' | 'authorPersonId' | 'teamId' | 'status'>) =>
     updateEdits((e) => ({
@@ -203,13 +231,30 @@ function TeamPanel({ person, assignment, team }: { person: Person; assignment: C
             Approve roster{proposed ? ` (${proposed})` : ''}
           </button>
         </div>
-        {proposed === 0 && (
-          <p className="muted adm-small" style={{ margin: 0 }}>
-            {approved > 0
-              ? 'You approved this roster. The admin publishes it to families.'
-              : 'This roster is still projected and can change as families register. The admin sends it to you for approval at each round.'}
-          </p>
-        )}
+        <div className="adm-next" role="status">
+          {proposed > 0 ? (
+            <p>
+              <b>The admin sent you {proposed} player{proposed === 1 ? '' : 's'} to approve.</b> Look them over (open &quot;Why on your team&quot; for
+              the reasons), then press Approve roster. If someone shouldn&apos;t be here, flag them or propose a swap below instead.
+              {pendingRound === 1 ? ' Round 1 only covers early sign-ups, so more players join after the regular deadline.' : ''}
+            </p>
+          ) : approved > 0 ? (
+            <p>
+              <b>Thanks, you approved this roster.</b> Next, the admin publishes it to families
+              {publishDate ? ` (planned for ${formatDate(publishDate)})` : ''}. Guardian contacts show up here once it&apos;s published.
+            </p>
+          ) : published > 0 ? (
+            <p>
+              <b>This roster is published.</b> Guardian contacts are below each player. More players may join after the next round.
+            </p>
+          ) : (
+            <p>
+              Nothing to do yet. This roster is projected: it changes as families register. The admin will send it to you to approve after
+              each registration deadline.
+            </p>
+          )}
+        </div>
+        <BadgeLegend coach />
         {roster.length === 0 ? (
           <p className="muted">No players yet.</p>
         ) : (
@@ -261,6 +306,7 @@ function RosterRow({ registrationId, teamId, onFlag }: { registrationId: ID; tea
   const [flagging, setFlagging] = useState(false);
   const [text, setText] = useState('');
   const published = p?.state === 'published';
+  const coachLock = p?.locked ? p.reasons.find((r) => r.code === 'coachChild' || r.code === 'protectedPick') : undefined;
   const guardians = (index.household.get(player.householdId)?.guardianIds ?? []).map((g) => index.person.get(g)).filter((g): g is Person => !!g);
   return (
     <li>
@@ -269,7 +315,10 @@ function RosterRow({ registrationId, teamId, onFlag }: { registrationId: ID; tea
         <span className="adm-chips">
           <span className="badge">{gradeText(player.grade)}</span>
           {p?.choiceRankMet ? <span className="badge">{ordinal(p.choiceRankMet)} choice</span> : null}
-          {p && p.state !== 'projected' && <span className={`badge state-${p.state}`}>{STATE_LABEL[p.state]}</span>}
+          {p && p.state !== 'projected' && (
+            <span className={`badge state-${p.state}`}>{p.state === 'proposed' ? 'Needs your approval' : STATE_LABEL[p.state]}</span>
+          )}
+          {coachLock && <span className="badge good">{coachLock.code === 'coachChild' ? 'Your child' : 'Your protected pick'}</span>}
         </span>
       </div>
       <div className="adm-chips">
@@ -533,8 +582,7 @@ function GameSchedule({ team }: { team: Team }) {
   return (
     <details className="adm-games">
       <summary>
-        <b>Games:</b> schedule position {track?.position}
-        {track?.description ? ` · ${track.description}` : ''} ({games.length} games)
+        <b>Games:</b> {track?.description || `schedule slot ${track?.position ?? '?'}`} ({games.length} games, tap to see them all)
       </summary>
       <div className="table-wrap">
         <table>

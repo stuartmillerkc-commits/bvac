@@ -123,7 +123,9 @@ function PreferencesEditor({ registration: r }: { registration: Registration }) 
     });
     setSaved(draft);
     setAutoAdded(false);
-    setStatus('Saved. BVAC will use these choices the next time teams are projected.');
+    const teamsOut = r.window === 'early' ? season.round1Publish : season.round2Publish;
+    const when = r.window === 'late' ? 'BVAC will offer you a seat on one of these teams as one opens' : `you'll hear which team on ${formatDate(teamsOut)}`;
+    setStatus(`Saved. You're all set: ${when}. You can come back and change these until ${formatDate(changeDeadline)}.`);
   };
 
   const touch = () => {
@@ -432,7 +434,9 @@ function RequestConfirm({
       </legend>
       <p className={q.matchStatus === 'ambiguous' ? s.matchMaybe : s.matchNone}>
         {q.matchStatus === 'ambiguous'
-          ? `More than one registered player could match. Which one is “${q.targetName}”?`
+          ? options.length === 1
+            ? `We think “${q.targetName}” is the player below. Is that right?`
+            : `More than one registered player could match. Which one is “${q.targetName}”?`
           : options.length
             ? `We couldn’t be sure who “${q.targetName}” is. Is it one of these?`
             : `We couldn’t find “${q.targetName}” among registered players yet. Try searching below.`}

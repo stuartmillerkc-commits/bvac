@@ -28,6 +28,8 @@ export function TeamOptionCard({
   const field = slot ? index.field.get(slot.fieldId) : undefined;
   const coach = division.settings.showCoachNames ? coachName(index, team) : undefined;
   const info = seatInfo(index, results, team);
+  const fcfs = isFirstComeFirstServed(division);
+  const full = info.status === 'waitlist';
   const headingId = `team-${team.id}`;
   return (
     <article className={`card ${s.teamCard} ${dimmed ? s.dimmed : ''}`} aria-labelledby={headingId}>
@@ -36,7 +38,7 @@ export function TeamOptionCard({
           {team.label}
           {team.name ? <span className="muted"> · {team.name}</span> : null}
         </h3>
-        <SeatChip info={info} fcfs={isFirstComeFirstServed(division)} />
+        <SeatChip info={info} fcfs={fcfs} />
       </div>
       <dl className={s.facts}>
         <dt>Practice</dt>
@@ -54,14 +56,21 @@ export function TeamOptionCard({
       </dl>
       <GameList gameTrackId={team.gameTrackId} summary="See every game" />
       {extra}
-      <div>
+      <div className={s.cta}>
         <Link
-          className="button"
+          className={`button${full ? ' secondary' : ''}`}
           href={`/register/?division=${division.code}&first=${team.id}`}
-          aria-label={`Register for ${team.label}${slot ? `, ${formatWindow(slot.window)}` : ''}`}
+          aria-label={`${full ? (fcfs ? 'Join the waitlist for' : 'Register anyway for') : 'Register for'} ${team.label}${slot ? `, ${formatWindow(slot.window)}` : ''}`}
         >
-          Register for this team
+          {full ? (fcfs ? 'Join the waitlist' : 'Register anyway') : 'Register for this team'}
         </Link>
+        {full ? (
+          <span className="muted">
+            {fcfs
+              ? 'This team is full. Registering puts you on its waitlist; pick a 2nd choice with open seats too.'
+              : 'Likely full. You can still pick it as your 1st choice; add a 2nd choice with open seats in case.'}
+          </span>
+        ) : null}
       </div>
     </article>
   );

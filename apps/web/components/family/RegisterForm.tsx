@@ -11,6 +11,7 @@ import {
   formatWindow,
   fullName,
   headCoach,
+  teamPracticeWindow,
   type CoachRequest,
   type Division,
   type Factor,
@@ -23,11 +24,13 @@ import {
   type PlayerRequestType,
   type Registration,
   type RegistrationWindow,
+  type Team,
   type VolunteerRole,
   type Weekday,
 } from '@bvac/core';
 import { useSeason } from '@/lib/season-store';
 import {
+  answersForTeam,
   availabilityFromAnswers,
   centralTimestamp,
   divisionForGrade,
@@ -160,7 +163,11 @@ export function RegisterForm() {
   const [step, setStep] = useState(0);
   const [guardian, setGuardian] = useState<GuardianAnswers>(EMPTY_GUARDIAN);
   const [player, setPlayer] = useState<PlayerAnswers>(() => emptyPlayer(urlDivision?.id ?? ''));
-  const [q, setQ] = useState<QuestionAnswers>(() => emptyQuestions(initialFirst));
+  const prefillTeam = initialFirst ? index.team.get(initialFirst) : undefined;
+  const [q, setQ] = useState<QuestionAnswers>(() => ({
+    ...emptyQuestions(initialFirst),
+    ...(prefillTeam ? answersForTeam(index, prefillTeam) : {}),
+  }));
   const [errors, setErrors] = useState<Errors>({});
   const [submitted, setSubmitted] = useState<Submitted | null>(null);
   /** Household and guardian carried over when registering a sibling. */
@@ -344,11 +351,14 @@ export function RegisterForm() {
     const grade = d.minGrade;
     const birthYear = 2020 - grade + (n % 2 === 0 ? 1 : 0);
     const birthdate = `${birthYear}-${n % 2 === 0 ? '03' : '10'}-1${n % 9}`;
-    const sampleDays: Weekday[] = ['tue', 'thu'];
-    const sampleTimes = ['17', '18'];
+    // Keep a team the family already picked (e.g. from the Team Finder) and answer with its night.
+    const kept = q.firstChoice && index.team.get(q.firstChoice)?.divisionId === d.id ? index.team.get(q.firstChoice) : undefined;
+    const keptAnswers = kept ? answersForTeam(index, kept) : undefined;
+    const sampleDays: Weekday[] = keptAnswers?.days.length ? keptAnswers.days : ['tue', 'thu'];
+    const sampleTimes = keptAnswers?.days.length ? keptAnswers.times : ['17', '18'];
     const sampleAvailability = availabilityFromAnswers(sampleDays, sampleTimes);
     const tueThu = visibleTeams(index, d.id).filter((t) => teamFits(index, t, sampleAvailability));
-    const first = (q.firstChoice && index.team.get(q.firstChoice)?.divisionId === d.id ? q.firstChoice : '') || tueThu[0]?.id || '';
+    const first = kept?.id || tueThu[0]?.id || '';
     const friend = registeredPlayers(index, d.id).same[3 + n];
     if (!household) setGuardian({ firstName: 'Jordan', lastName: 'Sample', email: 'jordan.sample@example.com', phone: '816-555-0142' });
     setPlayer({
@@ -430,7 +440,14 @@ export function RegisterForm() {
           <StepWho guardian={guardian} setGuardian={setGuardian} errors={errors} carried={household?.guardian ?? null} householdKids={householdKids} />
         ) : null}
         {step === 1 ? <StepPlayer player={player} setPlayer={setPlayer} errors={errors} divisions={divisions} q={q} setQ={setQ} /> : null}
-        {step === 2 && division ? <StepQuestions division={division} q={q} setQ={setQ} errors={errors} playerFirst={player.firstName} /> : null}
+        {step === 2 && division ? <StepQuestions
+            division={division}
+            q={q}
+            setQ={setQ}
+            errors={errors}
+            playerFirst={player.firstName}
+            prefillTeam={prefillTeam?.divisionId === division.id ? prefillTeam : undefined}
+          /> : null}
         {step === 3 && division ? (
           <StepReview division={division} guardian={household?.guardian ?? guardian} player={player} q={q} goTo={setStep} />
         ) : null}
@@ -690,12 +707,15 @@ function StepQuestions({
   setQ,
   errors,
   playerFirst,
+  prefillTeam,
 }: {
   division: Division;
   q: QuestionAnswers;
   setQ: (q: QuestionAnswers) => void;
   errors: Errors;
   playerFirst: string;
+  /** The team the family clicked in the Team Finder; its night is pre-checked. */
+  prefillTeam?: Team | undefined;
 }) {
   const { index, results } = useSeason();
   const teams = visibleTeams(index, division.id);
@@ -767,6 +787,13 @@ function StepQuestions({
             </label>
           ))}
         </div>
+        {prefillTeam ? (
+          <p className={s.hint}>
+            We checked {dayShort(teamPracticeWindow(index, prefillTeam).day)} because {prefillTeam.label} practices{' '}
+            {formatWindow(teamPracticeWindow(index, prefillTeam))}. Check any other days that work too: more days means more teams to choose
+            from.
+          </p>
+        ) : null}
         {errors.days ? <p className={s.error}>{errors.days}</p> : null}
       </fieldset>
 
@@ -806,6 +833,9 @@ function StepQuestions({
               </label>
             ))}
           </div>
+          <p className={s.hint}>
+            Check every hour you could be at the field. A practice from 6:30 to 7:30pm needs both 6:00–7:00 and 7:00–8:00 checked.
+          </p>
           {errors.times ? <p className={s.error}>{errors.times}</p> : null}
           {availability.length ? <p className={s.hint}>Works for: {availability.map(formatWindow).join(', ')}</p> : null}
         </fieldset>
@@ -1006,8 +1036,9 @@ export function MatchText({ match, typed, line }: { match: NameMatch; typed: str
   if (match.status === 'ambiguous')
     return (
       <p className={s.matchMaybe}>
-        More than one registered player could be “{typed}”: {match.candidates.slice(0, 3).map(line).join('; ')}. You can pick the right one
-        on the preferences page.
+        {match.candidates.length === 1
+          ? `Did you mean ${line(match.candidates[0]!)}? We’ll ask you to confirm on the team preferences page after you register.`
+          : `More than one registered player could be “${typed}”: ${match.candidates.slice(0, 3).map(line).join('; ')}. You can pick the right one on the team preferences page after you register.`}
       </p>
     );
   return (
@@ -1107,7 +1138,7 @@ function WindowText({ window }: { window: RegistrationWindow }) {
     return (
       <>
         <strong>Early registration.</strong> Fully refundable until round 1 publishes on {formatDate(season.round1Publish)}. Early registrants are
-        placed first.
+        placed first, and you&apos;ll hear which team on {formatDate(season.round1Publish)}.
       </>
     );
   if (window === 'late')

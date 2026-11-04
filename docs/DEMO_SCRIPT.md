@@ -42,7 +42,7 @@ Admin dashboard → **Play from Jan 4** → let it run 10–15 seconds → pause
 
 ## 5. Team board (1.5 min)
 
-Board → Division 3 → expand a kid card → drag a kid to another team.
+Board → Division 3 → open "Why this team?" on a kid card → drag a kid to another team.
 
 - "Every placement says why: '1st choice · friend request met · returning with Coach Torres (+25) · priority 65'."
 - "Priority follows BVAC's rules: early registration, seasons played, playing for this coach last season, siblings. They're all settings."
@@ -50,12 +50,12 @@ Board → Division 3 → expand a kid card → drag a kid to another team.
 
 ## 6–8. Round 1, coach approval, publish (2 min)
 
-Board → **Send round 1 to coaches** → Coach view as the D3 coach → **Approve** → back to the board → **Publish round 1**.
+Board → **Send round 1 to coaches** → click a coach's name in the panel's "Next step" note → **Approve roster** → back to the board → **Approve all as admin** for the rest → **Publish round 1**. The panel always says what comes next.
 
 - "After the early deadline, round 1 holds the early registrants' teams in place and sends them to coaches."
 - "Coaches see their roster forming and the reasons, but not guardian contacts until it's published."
 - "Publishing makes it final for families. Later registrations never bump a published kid. Early families get certainty in February."
-- Optionally show **Undo publish**.
+- Optionally show **Undo last publish**.
 
 ## 9. Back into SportsEngine (1 min)
 
