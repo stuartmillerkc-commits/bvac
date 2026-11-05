@@ -103,7 +103,7 @@ Registrations can come out as they arrive, by hand today and automatically with 
 - **Admin alert:** each registration has an "email results to" field. Every address listed gets an email for each new registrant, with their answers. Older help pages also describe daily, weekly or monthly summaries ([help](https://help.sportsengine.com/en/articles/6380779-welcome-registration-builders), [community answer](https://community.sportsengine.com/topic/752-is-there-an-alert-for-new-registrations/)).
 - **Auto notifications to families:** set on a Saved Report, sent right after registration or in a daily batch, and personalized with registration fields ([help](https://help.sportsengine.com/en/articles/6326177-how-to-send-auto-email-notifications-to-my-registrants)). This is how each family could get their own link to the preferences page.
 
-**Export format:** Saved Reports export as Excel or CSV. The companion takes either.
+**Export format:** Saved Reports export as Excel or CSV. The companion's import reads CSV only: export as CSV, or open the Excel file and save it as CSV. Excel upload is designed in [designs/04-intake.md](designs/04-intake.md) but not built.
 
 **Questions for a BVAC admin to check in their HQ account:** Is *API Settings* visible on their plan? Can a Saved Report include every custom question? Does the rostering tool or API accept a roster upload?
 
