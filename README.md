@@ -14,6 +14,7 @@ It is built to work **alongside SportsEngine**, not replace it: registration, pa
 - [SportsEngine research](docs/SPORTSENGINE.md): what BVAC's platform can and can't do, exports, API, pricing
 - [Demo script](docs/DEMO_SCRIPT.md): a 10-minute talk track for showing it to BVAC
 - [Build plan](docs/BUILD_PLAN.md): tasks, conventions and prompts for building it
+- [Design docs: from demo to real use](docs/designs/README.md): hosting, data and backend, sign-in, intake, exports, email, family responses, audit log, history and a single-admin pilot, each with ranked options
 - [Sample season](packages/seed/data/SUMMARY.md): what's in the demo data
 
 ## Run it

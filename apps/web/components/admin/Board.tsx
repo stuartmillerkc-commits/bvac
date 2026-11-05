@@ -141,7 +141,7 @@ export function Board() {
       <AdminHeader title="Team board">
         <DivisionPills divisions={divisions} current={division} hrefFor={(d) => `/admin/board/?d=${d.code}`} />
       </AdminHeader>
-      <p className="muted" style={{ margin: 0 }}>
+      <p className="muted adm-intro" style={{ margin: 0 }}>
         {division.name} · {division.label} · {regs.length} registered · teams of {settings.teamSize.min} to {settings.teamSize.max} players,{' '}
         {settings.teamSize.preferred} ideal. The engine suggested these teams; open &quot;Why this team?&quot; on any kid to see the reasons. To
         change one, drag the card or use its &quot;Move to…&quot; menu. Moved kids are pinned, so the engine leaves them there.
@@ -178,7 +178,7 @@ export function Board() {
       {notes.length > 0 && <CoachNotes notes={notes} map={map} onUpdate={updateEdits} />}
 
       {flags.length > 0 ? (
-        <details className="card" id="flags" open={urgent > 0 || undefined}>
+        <details className="card adm-flags" id="flags" open={urgent > 0 || undefined} data-urgent={urgent > 0 || undefined}>
           <summary>
             <b>
               {flags.length} thing{flags.length === 1 ? '' : 's'} to check
@@ -369,7 +369,7 @@ function CoachNotes({
   };
   return (
     <section className="card adm-stack" aria-labelledby="notes-title">
-      <h2 id="notes-title" style={{ margin: 0, fontSize: 18 }}>
+      <h2 id="notes-title" style={{ margin: 0 }}>
         Coach notes
       </h2>
       <ul className="adm-roster">

@@ -33,7 +33,7 @@ export function ExportsPage() {
       </div>
 
       <section className="card adm-stack no-print" aria-labelledby="exp-teams">
-        <h2 id="exp-teams" style={{ margin: 0, fontSize: 18 }}>
+        <h2 id="exp-teams" style={{ margin: 0 }}>
           Teams
         </h2>
         <p className="muted adm-small" style={{ margin: 0 }}>
@@ -47,7 +47,7 @@ export function ExportsPage() {
       </section>
 
       <section className="card adm-stack no-print" aria-labelledby="exp-schedule">
-        <h2 id="exp-schedule" style={{ margin: 0, fontSize: 18 }}>
+        <h2 id="exp-schedule" style={{ margin: 0 }}>
           Game and practice schedule
         </h2>
         <p className="muted adm-small" style={{ margin: 0 }}>
@@ -72,7 +72,7 @@ export function ExportsPage() {
 
       <section className="card adm-stack print-area" aria-labelledby="exp-roster">
         <div className="adm-spread">
-          <h2 id="exp-roster" style={{ margin: 0, fontSize: 18 }}>
+          <h2 id="exp-roster" style={{ margin: 0 }}>
             Roster list for SportsEngine&apos;s rostering tool
           </h2>
           <div className="adm-row no-print">
@@ -95,7 +95,7 @@ export function ExportsPage() {
         {roster.length === 0 ? (
           <p className="muted">No placements to list yet.</p>
         ) : (
-          <div className="table-wrap">
+          <div className="table-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>
@@ -127,7 +127,7 @@ export function ExportsPage() {
       </section>
 
       <section className="card adm-stack no-print" aria-labelledby="exp-pack">
-        <h2 id="exp-pack" style={{ margin: 0, fontSize: 18 }}>
+        <h2 id="exp-pack" style={{ margin: 0 }}>
           Question pack for the SportsEngine registration form
         </h2>
         <p className="muted adm-small" style={{ margin: 0 }}>
@@ -137,7 +137,7 @@ export function ExportsPage() {
         <label htmlFor="pack" className="adm-sr">
           Question pack text
         </label>
-        <textarea id="pack" readOnly value={pack} rows={14} style={{ width: '100%', fontFamily: 'ui-monospace, monospace', fontSize: 13 }} />
+        <textarea id="pack" readOnly value={pack} rows={14} style={{ width: '100%', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }} />
         <div className="adm-row">
           <button
             type="button"

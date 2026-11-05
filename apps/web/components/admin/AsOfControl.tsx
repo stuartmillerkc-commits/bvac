@@ -50,7 +50,7 @@ export function AsOfControl() {
   return (
     <section className="card adm-stack adm-asof" aria-labelledby="asof-title">
       <div className="adm-spread">
-        <h2 id="asof-title" style={{ margin: 0, fontSize: 18 }}>
+        <h2 id="asof-title" style={{ margin: 0 }}>
           As of {formatDate(current)}
           {!asOf && <span className="muted"> · everyone registered</span>}
         </h2>

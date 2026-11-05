@@ -191,7 +191,7 @@ function TeamPanel({ person, assignment, team }: { person: Person; assignment: C
 
   return (
     <section className="adm-stack" aria-labelledby={`team-${team.id}`}>
-      <div className="card adm-stack">
+      <div className="card adm-stack adm-coach-team">
         <div className="adm-spread">
           <h2 id={`team-${team.id}`} style={{ margin: 0 }}>
             {division.name} · {team.label}
@@ -309,7 +309,7 @@ function RosterRow({ registrationId, teamId, onFlag }: { registrationId: ID; tea
   const coachLock = p?.locked ? p.reasons.find((r) => r.code === 'coachChild' || r.code === 'protectedPick') : undefined;
   const guardians = (index.household.get(player.householdId)?.guardianIds ?? []).map((g) => index.person.get(g)).filter((g): g is Person => !!g);
   return (
-    <li>
+    <li data-state={p?.state}>
       <div className="adm-spread">
         <b>{fullName(player)}</b>
         <span className="adm-chips">
@@ -584,7 +584,7 @@ function GameSchedule({ team }: { team: Team }) {
       <summary>
         <b>Games:</b> {track?.description || `schedule slot ${track?.position ?? '?'}`} ({games.length} games, tap to see them all)
       </summary>
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table>
           <thead>
             <tr>

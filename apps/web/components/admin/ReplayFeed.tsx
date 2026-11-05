@@ -95,7 +95,7 @@ export function ReplayFeed() {
   return (
     <section className="card adm-stack" aria-labelledby="feed-title">
       <div className="adm-spread">
-        <h2 id="feed-title" style={{ margin: 0, fontSize: 18 }}>
+        <h2 id="feed-title" style={{ margin: 0 }}>
           What changed
         </h2>
         {days.length > 0 && (

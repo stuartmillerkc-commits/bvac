@@ -42,13 +42,13 @@ export function Dashboard() {
             <thead>
               <tr>
                 <th scope="col">Division</th>
+                <th scope="col">Next step</th>
+                <th scope="col">To check</th>
                 <th scope="col">Registered (early / regular / late)</th>
                 <th scope="col">Teams vs needed</th>
                 <th scope="col">Placed</th>
                 <th scope="col">Waitlist</th>
                 <th scope="col">1st choice</th>
-                <th scope="col">To check</th>
-                <th scope="col">Next step</th>
               </tr>
             </thead>
             <tbody>
@@ -70,6 +70,16 @@ export function Dashboard() {
                         {d.label} · {MODEL_LABEL[d.settings.model]}
                       </div>
                     </th>
+                    <td data-label="Next step" className="adm-small adm-action">
+                      <div>
+                        <NextStep code={d.code} rs={rs} />
+                      </div>
+                    </td>
+                    <td data-label="To check">
+                      <Link href={`/admin/board/?d=${d.code}#flags`} className="adm-plain-link" aria-label={`Things to check in ${d.name}`}>
+                        <FlagCounts flags={flags} />
+                      </Link>
+                    </td>
                     <td data-label="Registered (early / regular / late)">
                       <span>
                         <b>{regs.length}</b> <span className="muted">({count('early')} / {count('regular')} / {count('late')})</span>
@@ -90,16 +100,6 @@ export function Dashboard() {
                     <td data-label="Placed">{r?.stats.placed ?? '—'}</td>
                     <td data-label="Waitlist">{r?.stats.waitlisted ? <span className="badge warning">{r.stats.waitlisted}</span> : 0}</td>
                     <td data-label="1st choice">{r && r.stats.placed ? `${Math.round(r.stats.firstChoiceRate * 100)}%` : '—'}</td>
-                    <td data-label="To check">
-                      <Link href={`/admin/board/?d=${d.code}#flags`} className="adm-plain-link" aria-label={`Things to check in ${d.name}`}>
-                        <FlagCounts flags={flags} />
-                      </Link>
-                    </td>
-                    <td data-label="Next step" className="adm-small">
-                      <div>
-                        <NextStep code={d.code} rs={rs} />
-                      </div>
-                    </td>
                   </tr>
                 );
               })}

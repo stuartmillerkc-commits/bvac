@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { BrandMark } from './BrandMark';
 
 const LINKS = [
   { href: '/tour/', label: 'Tour' },
@@ -18,9 +19,7 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="site-header-inner">
         <Link href="/" className="brand">
-          <span className="brand-mark" aria-hidden="true">
-            BV
-          </span>
+          <BrandMark className="brand-mark" />
           BVAC Team Builder
         </Link>
         <nav className="nav" aria-label="Main">

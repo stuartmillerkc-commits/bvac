@@ -2,19 +2,34 @@
 
 .stack {
   display: grid;
-  gap: 16px;
+  gap: var(--space-5);
+}
+
+.stack > * {
+  min-width: 0;
 }
 
 .row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
+  gap: var(--space-2) var(--space-3);
 }
 
 .intro {
-  max-width: 720px;
+  max-width: 68ch;
   margin-top: 0;
+  font-size: var(--text-lg);
+}
+
+@media (max-width: 600px) {
+  .intro {
+    font-size: var(--text-md);
+  }
+}
+
+.page h1 {
+  margin-bottom: var(--space-2);
 }
 
 .srOnly {
@@ -29,23 +44,12 @@
   border: 0;
 }
 
-/* Focus states for everything interactive on these pages. */
-.page :is(a, button, input, select, textarea, [tabindex]):focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-/* ---------------------------------------------------------------- form controls */
+/* ---------------------------------------------------------------- form controls (roomy, touch friendly) */
 
 .page :is(input[type='text'], input[type='email'], input[type='tel'], input[type='date'], input[type='search'], select, textarea) {
-  font: inherit;
-  color: var(--color-text);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  padding: 8px 10px;
+  padding: var(--space-2) var(--space-3);
   width: 100%;
-  min-height: 40px;
+  min-height: 44px;
 }
 
 .page textarea {
@@ -57,39 +61,40 @@
   width: 18px;
   height: 18px;
   margin: 0;
-  accent-color: var(--color-primary);
   flex: none;
 }
 
 .page button:disabled {
-  opacity: 0.5;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
 .field {
   display: grid;
-  gap: 4px;
+  gap: var(--space-1);
   min-width: 0;
+  align-content: start;
 }
 
 .label {
-  font-weight: 600;
-  font-size: 15px;
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-md);
 }
 
 .required {
   color: var(--color-critical);
-  margin-left: 2px;
+  margin-left: var(--space-0);
 }
 
 .hint {
-  font-size: 13px;
+  font-size: var(--text-xs);
   color: var(--color-text-muted);
   margin: 0;
 }
 
 .error {
-  font-size: 13px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
   color: var(--color-critical);
   margin: 0;
 }
@@ -100,100 +105,121 @@
   padding: 0;
   min-width: 0;
   display: grid;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .fieldset > legend {
   padding: 0;
-  margin-bottom: 4px;
+  margin-bottom: var(--space-1);
 }
 
 .choices {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 16px;
+  gap: var(--space-2);
 }
 
 .choiceStack {
   display: grid;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .check {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   cursor: pointer;
-  min-height: 32px;
+  min-height: 36px;
 }
 
+/* Checkbox or radio shown as a selectable pill. */
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  padding: 6px 12px;
+  gap: var(--space-2);
+  border: 1px solid var(--color-field-border);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-3);
   cursor: pointer;
   background: var(--color-surface);
-  min-height: 40px;
+  min-height: 44px;
+  font-weight: var(--weight-medium);
+  transition:
+    background var(--transition),
+    border-color var(--transition);
+}
+
+.pill:hover {
+  border-color: var(--color-primary);
 }
 
 .pill:has(input:checked) {
   border-color: var(--color-primary);
-  background: var(--color-info-bg);
+  background: var(--color-primary-soft);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
 }
 
 .formGrid {
   display: grid;
-  gap: 16px;
+  gap: var(--space-4);
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .small {
-  font-size: 14px;
+  font-size: var(--text-sm);
 }
 
+/* Square icon button (rank arrows, remove). */
 .iconButton {
   font: inherit;
-  font-size: 14px;
+  font-size: var(--text-sm);
   line-height: 1;
   min-width: 36px;
   min-height: 36px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--color-border);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
   background: var(--color-surface);
   color: var(--color-text);
   cursor: pointer;
+  transition:
+    background var(--transition),
+    border-color var(--transition);
 }
 
 .iconButton:hover:not(:disabled) {
   border-color: var(--color-primary);
   color: var(--color-primary);
+  background: var(--color-primary-soft);
 }
 
 .linkButton {
   font: inherit;
+  font-weight: var(--weight-semibold);
   background: none;
   border: none;
   padding: 0;
   color: var(--color-primary);
   text-decoration: underline;
+  text-underline-offset: 0.18em;
   cursor: pointer;
 }
 
-/* ---------------------------------------------------------------- seat chips */
+.linkButton:hover {
+  color: var(--color-primary-strong);
+}
+
+/* ---------------------------------------------------------------- seat chips (same shape as .badge, with a status dot) */
 
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid currentColor;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  line-height: 1.35;
+  padding: var(--space-1) var(--space-3) var(--space-1) var(--space-2);
+  border-radius: var(--radius-pill);
   white-space: nowrap;
 }
 
@@ -207,94 +233,122 @@
 
 .open {
   color: var(--color-good);
+  background: var(--color-good-bg);
 }
 
 .filling {
   color: var(--color-warning);
+  background: var(--color-warning-bg);
 }
 
 .waitlist {
   color: var(--color-critical);
+  background: var(--color-critical-bg);
 }
 
 /* ---------------------------------------------------------------- Team Finder */
 
 .toolbar {
   display: grid;
-  gap: 16px;
+  gap: var(--space-5);
 }
 
 .tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
+/* Division choice: a large, friendly pill with the grades underneath. */
 .tab {
   font: inherit;
-  font-size: 15px;
-  border: 1px solid var(--color-border);
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  border: 1px solid var(--color-field-border);
   background: var(--color-surface);
   color: var(--color-text);
-  border-radius: 999px;
-  padding: 6px 14px;
-  min-height: 40px;
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-4);
+  min-height: 44px;
+  text-align: left;
   cursor: pointer;
+  transition:
+    background var(--transition),
+    border-color var(--transition);
+}
+
+.tab:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
 }
 
 .tab[aria-pressed='true'] {
   background: var(--color-primary);
   border-color: var(--color-primary);
   color: var(--color-primary-contrast);
+  box-shadow: var(--shadow);
 }
 
 .tabSub {
   display: block;
-  font-size: 12px;
-  opacity: 0.85;
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-medium);
+  opacity: 0.9;
 }
 
 .helper {
-  border: 1px dashed var(--color-border);
+  border: 1px dashed var(--color-border-strong);
   border-radius: var(--radius);
-  padding: 12px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-2);
 }
 
 .helper > summary {
-  cursor: pointer;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   color: var(--color-primary);
 }
 
 .ruleNote {
   background: var(--color-info-bg);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 22%, transparent);
   border-radius: var(--radius);
-  padding: 10px 12px;
-  font-size: 14px;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
   margin: 0;
 }
 
 .teamGrid {
   display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
 }
 
+/* Team option card: name and seat status up top, facts, then one clear action. */
 .teamCard {
-  display: grid;
-  gap: 8px;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border-top: 4px solid var(--color-primary);
+  transition:
+    box-shadow var(--transition),
+    border-color var(--transition);
+}
+
+.teamCard:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 .teamCard h3 {
   margin: 0;
+  font-size: var(--text-xl);
 }
 
 .teamHead {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 8px;
+  align-items: center;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
@@ -302,58 +356,101 @@
   margin: 0;
   display: grid;
   grid-template-columns: max-content 1fr;
-  gap: 4px 12px;
-  font-size: 14px;
+  gap: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .facts dt {
   color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-top: 0.15em;
 }
 
 .facts dd {
   margin: 0;
 }
 
+/* The practice night is what families look for first. */
+.facts dd:first-of-type {
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-md);
+}
+
 .dimmed {
-  opacity: 0.8;
+  border-top-color: var(--color-border-strong);
+  background: var(--color-surface-2);
 }
 
 .sectionTitle {
-  font-size: 16px;
-  margin: 8px 0 0;
+  font-size: var(--text-lg);
+  margin: var(--space-2) 0 0;
 }
 
-/* ---------------------------------------------------------------- mock SportsEngine form */
+/* Team card call to action, with a note when the team is full. */
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: auto;
+  gap: var(--space-2) var(--space-3);
+}
+
+.cta > span {
+  flex: 1 1 220px;
+  font-size: var(--text-sm);
+}
+
+/* ---------------------------------------------------------------- mock SportsEngine form
+ * Deliberately plain: neutral surfaces, square-ish corners, a stepper, and
+ * numbered questions, so it reads as "a registration platform's form".
+ */
 
 .mockBanner {
-  border: 1px solid var(--color-border);
+  border: 1px solid color-mix(in srgb, var(--color-warning) 35%, transparent);
   border-left: 4px solid var(--color-warning);
-  background: var(--color-surface);
+  background: var(--color-warning-bg);
   border-radius: var(--radius);
-  padding: 12px 14px;
-  font-size: 14px;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
 }
 
 .mockBanner strong {
   display: block;
-  margin-bottom: 2px;
+  margin-bottom: var(--space-0);
 }
 
 .seForm {
-  max-width: 760px;
+  max-width: var(--form-width);
   margin: 0 auto;
   display: grid;
-  gap: 16px;
+  gap: var(--space-4);
+}
+
+.seForm :global(.card) {
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .seHeader {
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: 12px;
+  padding-bottom: var(--space-1);
+}
+
+.seHeader > p {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .seHeader h1 {
-  font-size: 24px;
-  margin-bottom: 4px;
+  font-size: var(--text-2xl);
+  margin: var(--space-1) 0 var(--space-4);
 }
 
 .stepper {
@@ -362,15 +459,16 @@
   padding: 0;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 4px;
+  gap: var(--space-1);
   counter-reset: step;
 }
 
 .stepper li {
-  font-size: 13px;
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
   color: var(--color-text-muted);
-  border-top: 4px solid var(--color-border);
-  padding-top: 6px;
+  border-top: 4px solid var(--color-border-strong);
+  padding-top: var(--space-2);
 }
 
 .stepper li[data-state='done'] {
@@ -380,60 +478,67 @@
 .stepper li[data-state='current'] {
   border-top-color: var(--color-primary);
   color: var(--color-text);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 
 .stepNum {
   display: block;
-  font-size: 12px;
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .panel {
   display: grid;
-  gap: 20px;
+  gap: var(--space-5);
 }
 
 .panel h2 {
-  font-size: 20px;
+  font-size: var(--text-xl);
   margin: 0;
 }
 
 .question {
   display: grid;
-  gap: 6px;
-  padding-top: 16px;
+  gap: var(--space-2);
+  padding-top: var(--space-4);
   border-top: 1px solid var(--color-border);
 }
 
 .qNum {
   color: var(--color-text-muted);
-  font-weight: 600;
-  margin-right: 4px;
+  font-weight: var(--weight-semibold);
+  margin-right: var(--space-1);
 }
 
 .newTag {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-bold);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   color: var(--color-primary);
-  margin-left: 8px;
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-pill);
+  padding: 0 var(--space-2);
+  margin-left: var(--space-2);
+  vertical-align: 0.1em;
 }
 
 .matchFound {
-  font-size: 14px;
+  font-size: var(--text-sm);
   color: var(--color-good);
   margin: 0;
 }
 
 .matchMaybe {
-  font-size: 14px;
+  font-size: var(--text-sm);
   color: var(--color-warning);
   margin: 0;
 }
 
 .matchNone {
-  font-size: 14px;
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
   margin: 0;
 }
@@ -441,18 +546,18 @@
 .navRow {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-3);
   flex-wrap: wrap;
   border-top: 1px solid var(--color-border);
-  padding-top: 16px;
+  padding-top: var(--space-4);
 }
 
 .summary {
   margin: 0;
   display: grid;
   grid-template-columns: minmax(120px, max-content) 1fr;
-  gap: 6px 16px;
-  font-size: 15px;
+  gap: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
 }
 
 .summary dt {
@@ -463,12 +568,14 @@
   margin: 0;
   min-width: 0;
   overflow-wrap: anywhere;
+  font-weight: var(--weight-medium);
 }
 
 .totals {
   display: grid;
-  gap: 4px;
+  gap: var(--space-1);
   max-width: 360px;
+  font-variant-numeric: tabular-nums;
 }
 
 .totals div {
@@ -477,35 +584,37 @@
 }
 
 .totals .total {
-  font-weight: 700;
-  border-top: 1px solid var(--color-border);
-  padding-top: 4px;
+  font-weight: var(--weight-bold);
+  border-top: 1px solid var(--color-border-strong);
+  padding-top: var(--space-1);
 }
 
 .receipt {
   display: grid;
-  gap: 12px;
+  gap: var(--space-4);
   text-align: left;
 }
 
 .receiptCheck {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   background: var(--color-good);
   color: var(--color-surface);
-  font-size: 24px;
-  font-weight: 700;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  box-shadow: 0 0 0 6px var(--color-good-bg);
 }
 
 .continueBox {
   border: 2px solid var(--color-primary);
+  background: var(--color-primary-soft);
   border-radius: var(--radius);
-  padding: 14px;
+  padding: var(--space-4);
   display: grid;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 /* ---------------------------------------------------------------- ranking */
@@ -515,30 +624,39 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 8px;
+  gap: var(--space-2);
+  counter-reset: rank;
 }
 
 .rankItem {
   display: grid;
   grid-template-columns: auto auto 1fr auto;
   align-items: center;
-  gap: 8px 10px;
+  gap: var(--space-2) var(--space-3);
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius);
-  padding: 8px 10px;
+  padding: var(--space-2) var(--space-3);
+  box-shadow: var(--shadow-sm);
+}
+
+.rankItem:first-child {
+  border-color: var(--color-primary);
+  box-shadow:
+    inset 3px 0 0 var(--color-primary),
+    var(--shadow-sm);
 }
 
 .rankItem[data-dragging='true'] {
   border-color: var(--color-primary);
-  box-shadow: 0 4px 12px rgb(16 24 40 / 18%);
+  box-shadow: var(--shadow-lg);
   position: relative;
   z-index: 1;
 }
 
 .rankItem[data-grabbed='true'] {
   border-color: var(--color-primary);
-  background: var(--color-info-bg);
+  background: var(--color-primary-soft);
 }
 
 .handle {
@@ -547,22 +665,24 @@
   touch-action: none;
   user-select: none;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: none;
   color: var(--color-text-muted);
   min-width: 32px;
   min-height: 36px;
-  padding: 0 4px;
-  font-size: 18px;
+  padding: 0 var(--space-1);
+  font-size: var(--text-lg);
   line-height: 1;
 }
 
 .handle:hover {
-  border-color: var(--color-border);
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-2);
 }
 
 .rankNum {
-  font-weight: 700;
+  font-weight: var(--weight-heavy);
+  font-size: var(--text-lg);
   min-width: 2.2em;
   color: var(--color-primary);
 }
@@ -573,27 +693,27 @@
 
 .rankActions {
   display: flex;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .fit {
   color: var(--color-good);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
 }
 
 .noFit {
   color: var(--color-critical);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
 }
 
 .metaLine {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 10px;
+  gap: var(--space-1) var(--space-3);
   align-items: center;
-  font-size: 14px;
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
 
@@ -602,41 +722,43 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .unrankedList li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   flex-wrap: wrap;
-  border: 1px dashed var(--color-border);
+  border: 1px dashed var(--color-border-strong);
   border-radius: var(--radius);
-  padding: 8px 10px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-2);
 }
 
 .requestBox {
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius);
-  padding: 12px;
+  padding: var(--space-3) var(--space-4);
   display: grid;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .saveBar {
   position: sticky;
-  bottom: 0;
+  bottom: var(--space-3);
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-3) var(--space-4);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px 16px;
+  gap: var(--space-2) var(--space-4);
+  z-index: 1;
 }
 
 .familyList {
@@ -644,34 +766,43 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .familyList a {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 4px 12px;
-  padding: 8px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius);
   text-decoration: none;
   color: var(--color-text);
+  font-weight: var(--weight-semibold);
   background: var(--color-surface);
+  transition:
+    border-color var(--transition),
+    background var(--transition);
 }
 
 .familyList a:hover {
   border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.familyList a :global(.muted) {
+  font-weight: var(--weight-regular);
 }
 
 @media (max-width: 480px) {
   .stepper li {
-    font-size: 11px;
+    font-size: var(--text-2xs);
   }
 
   .rankItem {
-    gap: 6px;
-    padding: 8px 6px;
+    gap: var(--space-2);
+    padding: var(--space-2);
   }
 
   .rankNum {
@@ -681,17 +812,4 @@
   .rankActions {
     flex-direction: column;
   }
-}
-
-/* Team card call to action, with a note when the team is full. */
-.cta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-}
-
-.cta > span {
-  flex: 1 1 220px;
-  font-size: 14px;
 }

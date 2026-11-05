@@ -61,9 +61,9 @@ export function RoundsPanel({ division }: { division: Division }) {
 
   const STEPS = ['Send to coaches', 'Coaches approve', 'Publish to families'];
   return (
-    <section className="card adm-stack" aria-labelledby="rounds-title">
+    <section className="card adm-stack adm-rounds" aria-labelledby="rounds-title">
       <div className="adm-spread">
-        <h2 id="rounds-title" style={{ margin: 0, fontSize: 18 }}>
+        <h2 id="rounds-title" style={{ margin: 0 }}>
           {done ? 'Both rounds published' : `Round ${round}`}
           {!done && (
             <span className="muted adm-small" style={{ fontWeight: 400 }}>

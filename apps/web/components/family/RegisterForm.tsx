@@ -1174,7 +1174,7 @@ function Receipt({
       <div className={s.receiptCheck} aria-hidden="true">
         ✓
       </div>
-      <h1 ref={headingRef} tabIndex={-1} style={{ fontSize: 24 }}>
+      <h1 ref={headingRef} tabIndex={-1} style={{ fontSize: 'var(--text-2xl)' }}>
         Thank you, {guardian.firstName}! Your registration is complete.
       </h1>
       <dl className={s.summary}>

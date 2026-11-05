@@ -9,14 +9,14 @@ export default function Home() {
   const s = data.season;
   return (
     <>
-      <section style={{ marginBottom: 24 }}>
+      <section className="home-hero">
         <h1>Teams that fit every family&apos;s week</h1>
         <p className="muted" style={{ maxWidth: 720 }}>
           Coaches pick practice nights first. Families see real team options, with practice and game times, before they register in
           SportsEngine. As registrations come in, teams build themselves using BVAC&apos;s rules for siblings, friends, seniority and
           team size, and admins and coaches review before anything is final.
         </p>
-        <p style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+        <p style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)', margin: 0 }}>
           <Link className="button" href="/tour/">
             Take the 10-minute tour
           </Link>
@@ -40,7 +40,7 @@ export default function Home() {
           Regular registration {formatDate(s.windows.regular.start)} – {formatDate(s.windows.regular.end)} · Rosters final{' '}
           {formatDate(s.rostersFinal)}
         </p>
-        <div className="table-wrap">
+        <div className="table-wrap" tabIndex={0}>
           <table>
             <thead>
               <tr>
@@ -78,7 +78,7 @@ export default function Home() {
 
 function RoleCard({ href, title, body }: { href: string; title: string; body: string }) {
   return (
-    <Link href={href} className="card" style={{ textDecoration: 'none', color: 'inherit' }}>
+    <Link href={href} className="card role-card" style={{ textDecoration: 'none', color: 'inherit' }}>
       <h3>{title}</h3>
       <p className="muted" style={{ margin: 0 }}>
         {body}
