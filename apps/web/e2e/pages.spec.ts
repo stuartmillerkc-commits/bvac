@@ -27,7 +27,7 @@ for (const [path, heading] of PAGES) {
     await expect(page.locator('h1').first()).toHaveText(heading);
     await expect(page).toHaveTitle(/BVAC Team Builder/);
     // Nothing wider than the viewport on phones.
-    if (info.project.name === 'mobile') {
+    if (info.project.name.startsWith('mobile')) {
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       expect(overflow).toBeLessThanOrEqual(1);
     }
@@ -37,8 +37,8 @@ for (const [path, heading] of PAGES) {
 
 test.describe('accessibility', () => {
   for (const [path] of PAGES) {
-    test(`${path} has no serious axe violations`, async ({ page }, info) => {
-      test.skip(info.project.name === 'mobile', 'checked on desktop, light and dark');
+    // Runs in every project that matches this file: desktop and phone, light and dark.
+    test(`${path} has no serious axe violations`, async ({ page }) => {
       await page.goto(path, { waitUntil: 'networkidle' });
       const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
       const serious = results.violations

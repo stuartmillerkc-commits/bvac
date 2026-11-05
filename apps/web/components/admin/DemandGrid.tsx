@@ -39,7 +39,7 @@ export function DemandGrid() {
         Each cell: families who can make that whole half hour · team options practicing then. Darker means more families. A dashed cell has
         families but no team.
       </p>
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table className="adm-grid-table">
           <thead>
             <tr>

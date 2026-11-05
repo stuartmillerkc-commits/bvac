@@ -584,7 +584,7 @@ function GameSchedule({ team }: { team: Team }) {
       <summary>
         <b>Games:</b> {track?.description || `schedule slot ${track?.position ?? '?'}`} ({games.length} games, tap to see them all)
       </summary>
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table>
           <thead>
             <tr>

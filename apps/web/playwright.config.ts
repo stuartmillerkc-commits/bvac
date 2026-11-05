@@ -20,6 +20,7 @@ export default defineConfig({
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
     { name: 'mobile', use: { ...devices['Pixel 7'] }, testMatch: /pages\.spec\.ts/ },
     { name: 'dark', use: { ...devices['Desktop Chrome'], colorScheme: 'dark' }, testMatch: /pages\.spec\.ts/ },
+    { name: 'mobile-dark', use: { ...devices['Pixel 7'], colorScheme: 'dark' }, testMatch: /pages\.spec\.ts/ },
   ],
   webServer: {
     command: `node scripts/serve-out.mjs ${port}`,

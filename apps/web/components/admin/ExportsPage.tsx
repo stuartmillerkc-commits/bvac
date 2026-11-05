@@ -95,7 +95,7 @@ export function ExportsPage() {
         {roster.length === 0 ? (
           <p className="muted">No placements to list yet.</p>
         ) : (
-          <div className="table-wrap">
+          <div className="table-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>

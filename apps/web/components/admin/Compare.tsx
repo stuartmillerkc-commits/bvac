@@ -137,7 +137,7 @@ function CompareDivision({ division }: { division: Division }) {
         <p style={{ margin: 0 }}>
           <b>{changed}</b> of {rb.placements.length} kids are on a different team (or waitlist) in B than in A.
         </p>
-        <div className="table-wrap">
+        <div className="table-wrap" tabIndex={0}>
           <table className="adm-compare">
             <thead>
               <tr>
@@ -179,7 +179,7 @@ function CompareDivision({ division }: { division: Division }) {
             </tbody>
           </table>
         </div>
-        <div className="table-wrap">
+        <div className="table-wrap" tabIndex={0}>
           <table>
             <thead>
               <tr>

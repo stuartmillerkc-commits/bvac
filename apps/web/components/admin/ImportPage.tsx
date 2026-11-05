@@ -102,7 +102,7 @@ export function ImportPage() {
             </p>
             <details>
               <summary className="adm-small">Show the column mapping</summary>
-              <div className="table-wrap">
+              <div className="table-wrap" tabIndex={0}>
                 <table>
                   <thead>
                     <tr>
@@ -166,7 +166,7 @@ export function ImportPage() {
               </ul>
             )}
             {created.length > 0 && (
-              <div className="table-wrap">
+              <div className="table-wrap" tabIndex={0}>
                 <table>
                   <caption className="adm-small muted" style={{ textAlign: 'left' }}>
                     New registrations

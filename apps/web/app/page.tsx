@@ -40,7 +40,7 @@ export default function Home() {
           Regular registration {formatDate(s.windows.regular.start)} – {formatDate(s.windows.regular.end)} · Rosters final{' '}
           {formatDate(s.rostersFinal)}
         </p>
-        <div className="table-wrap">
+        <div className="table-wrap" tabIndex={0}>
           <table>
             <thead>
               <tr>
